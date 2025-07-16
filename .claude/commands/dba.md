@@ -37,11 +37,13 @@ Show this Progress Overview before each step:
 
 Step 1: GitHub Repository Setup
 
-Step 2: Product Requirements Gathering  
+Step 2: Databricks App Setup
 
-Step 3: Technical Architecture Planning
+Step 3: Product Requirements Gathering  
 
-Step 4: Implementation Planning
+Step 4: Technical Architecture Planning
+
+Step 5: Implementation Planning
 
 **Bold the current step** and add a **⏺** dot next to the one we're on, and add a **✅** checkmark next to completed steps. Show the sub-steps (a, b, c) only for the current step, bold exactly which sub-step they are on, and add checkmarks next to completed sub-steps like this:
 
@@ -51,13 +53,24 @@ Step 4: Implementation Planning
    - ✅ a) GitHub Account Selection ← (checkmark if complete)
    - **b) Repository Name & Location** ← (bold if current sub-step)
    - *c) Local Project Location* ← (italics if not yet done)
-   - *d) Create Repository & Initialize Project* ← (italics if not yet done)
+   - *d) Create Repository from Template* ← (italics if not yet done)
+   - *e) Success & Next Steps* ← (italics if not yet done)
 
-*Step 2: Product Requirements Gathering*
+*Step 2: Databricks App Setup*
+   - a) Interactive Setup
+   - b) Deploy & Test
 
-*Step 3: Technical Architecture Planning*
+*Step 3: Product Requirements Gathering*
+   - a) Problem Definition
+   - b) Target Users  
+   - c) Key Features
 
-*Step 4: Implementation Planning*
+*Step 4: Technical Architecture Planning*
+   - a) Data Sources
+   - b) External Integrations
+   - c) Scale Requirements
+
+*Step 5: Implementation Planning*
 
 ---
 
@@ -96,58 +109,104 @@ Where would you like to create the new project? (Provide the full path, e.g., `/
 
 *Please answer this question before I proceed with the next step.*
 
-**d) Create Repository & Initialize Project**
+**d) Create Repository from Template**
 
 Once you've confirmed the GitHub account, repository name, and local location, I'll:
 
-1. Create the new GitHub repository using the selected account
-2. Clone the repository to your specified local directory
-3. Copy all template files from the current databricks-app-template to your new project
-4. Initialize the project with your specific details
-5. Commit and push the initial template to your new repository
+1. Create a new **private** GitHub repository using the `databricks-solutions/claude-databricks-app-template` template
+2. Use the `gh` command to create the repository with your selected account: `gh repo create [username]/[repo-name] --template databricks-solutions/claude-databricks-app-template --private`
+3. Clone the new repository to your specified local directory
+4. The repository will automatically include all template files and structure
+5. You're ready to start customizing your Databricks app!
 
-*This ensures your new project starts with a clean copy of the template.*
+**Note:** The repository will be created as **private** by default. You can make it public later by going to the repository settings on GitHub, or ask me to do it for you after creation.
+
+*This uses GitHub's template functionality to create a clean, up-to-date copy of the template.*
+
+**e) Success & Next Steps**
+
+After successfully creating your repository and cloning it locally, I'll show you:
+
+🎉 **Repository Created Successfully!**
+- **GitHub Repository**: `https://github.com/[selected-username]/[repo-name]`
+- **Local Directory**: `[specified-path]/[repo-name]/`
+
+**What's Next?**
+You can either:
+1. **Continue here** - I'll proceed with the product requirements gathering to customize your new app
+2. **Go to your new project** - Navigate to `[specified-path]/[repo-name]/` and run `/dba` again in that context
+
+*The choice is yours! Both paths will lead to the same comprehensive setup process.*
 
 ---
 
-## Step 2: Product Requirements Gathering
+## Step 2: Databricks App Setup
+
+**a) Interactive Setup**
+
+Now that your repository is created, I'll run the interactive setup script to configure your Databricks app:
+
+1. I'll use `osascript` to open a new terminal window in your project directory
+2. Run `cd [specified-path]/[repo-name] && ./setup.sh --auto-close` which will guide you through:
+   - Databricks authentication (PAT or profile)
+   - Environment variable configuration
+   - Python and frontend dependency installation
+   - Claude MCP Playwright setup
+3. When setup completes, the terminal will close automatically
+4. I'll confirm the setup was successful
+
+**Command I'll execute:**
+```bash
+osascript -e 'tell application "Terminal" to do script "cd [specified-path]/[repo-name] && ./setup.sh --auto-close"' -e 'tell application "Terminal" to activate'
+```
+
+**Note:** The setup script requires interactive input, so it must run in a separate terminal window that you can interact with.
+
+*I'll wait for the setup to complete before proceeding to the next step.*
+
+**b) Deploy & Test**
+
+After the setup completes, I'll deploy the template app to make sure everything works:
+
+1. I'll run `./deploy.sh` from your project directory to deploy the base template to Databricks Apps
+2. This will:
+   - Build the frontend application
+   - Generate Python requirements
+   - Deploy to your Databricks workspace
+   - Provide you with the app URL
+3. I'll verify the deployment was successful
+4. You can test the basic template functionality before we customize it
+
+**This ensures your development environment and deployment pipeline are working correctly before we add custom features.**
+
+*I'll wait for the deployment to complete and show you the app URL.*
+
+---
+
+## Step 3: Product Requirements Gathering
 
 **a) Problem Definition**
 
 **Question:**
-What is the main problem this application will solve?
+What is the main problem this application will solve? (Type "skip" to skip this question)
 
 **If this question is unclear or you need help thinking through this aspect, please ask for clarification.**
 
-*Please provide a detailed answer before I proceed to the next question.*
+*Please provide a detailed answer or type "skip" before I proceed to the next question.*
 
 **b) Target Users**
 
 **Question:**
-Who will use this application? (Data scientists, engineers, business users, etc.)
+Who will use this application? (Data scientists, engineers, business users, etc.) (Type "skip" to skip this question)
 
-*Please provide a detailed answer before I proceed to the next question.*
+*Please provide a detailed answer or type "skip" before I proceed to the next question.*
 
 **c) Key Features**
 
 **Question:**
-What are the 3-5 most important features this app must have?
+What are the 3-5 most important features this app must have? (Type "skip" to skip this question)
 
-*Please provide a detailed answer before I proceed to the next question.*
-
-**d) Success Metrics**
-
-**Question:**
-How will you know if this app is successful?
-
-*Please provide a detailed answer before I proceed to the next question.*
-
-**e) Priority Level**
-
-**Question:**
-Is this a prototype, MVP, or production-ready application?
-
-*Please provide a detailed answer before I proceed to the next question.*
+*Please provide a detailed answer or type "skip" before I proceed to the next question.*
 
 ---
 
@@ -156,39 +215,25 @@ Is this a prototype, MVP, or production-ready application?
 **a) Data Sources**
 
 **Question:**
-What data will this app need to access? (Tables, APIs, files, etc.)
+What data will this app need to access? (Tables, APIs, files, etc.) (Type "skip" to skip this question)
 
 **If this technical aspect is unclear or you need help designing the architecture, please ask for clarification.**
 
-*Please provide technical details before I proceed to the next question.*
+*Please provide technical details or type "skip" before I proceed to the next question.*
 
 **b) External Integrations**
 
 **Question:**
-What external systems will it integrate with?
+What external systems will it integrate with? (Type "skip" to skip this question)
 
-*Please provide technical details before I proceed to the next question.*
+*Please provide technical details or type "skip" before I proceed to the next question.*
 
 **c) Scale Requirements**
 
 **Question:**
-How many users? How much data? Response time requirements?
+How many users? How much data? Response time requirements? (Type "skip" to skip this question)
 
-*Please provide technical details before I proceed to the next question.*
-
-**d) Deployment Requirements**
-
-**Question:**
-Any special deployment requirements or constraints?
-
-*Please provide technical details before I proceed to the next question.*
-
-**e) Authentication**
-
-**Question:**
-How should users authenticate? (SSO, tokens, etc.)
-
-*Please provide technical details before I proceed to the next question.*
+*Please provide technical details or type "skip" before I proceed to the next question.*
 
 ---
 
@@ -302,15 +347,17 @@ Are you ready for me to create the project based on all your previous answers?
 ---
 
 ## Template Information:
-- **Source**: `./databricks-app-template/` (or current directory if you're in the template repo)
-- **Template Repository**: `git@github.com:databricks-solutions/claude-databricks-app-template.git`
-- **Todo System**: `~/universe/mlflow/web/js/src/experiment-tracking/components/experiment-page/components/traces-v3/trends/docs/todos.md`
+- **Template Repository**: `databricks-solutions/claude-databricks-app-template`
+- **Template URL**: `https://github.com/databricks-solutions/claude-databricks-app-template`
+- **Creation Method**: GitHub template repository (not manual file copying)
 - **Output Location**: `[specified-path]/{project-name}/`
 
-**Template Setup:**
-If `./databricks-app-template/` doesn't exist, I'll ask you to:
-1. Request permissions for the databricks-app-template repository if needed
-2. Once you have access, I'll clone `git@github.com:databricks-solutions/claude-databricks-app-template.git` to `./databricks-app-template/`
+**Template Creation:**
+This command uses GitHub's template functionality to create new repositories:
+1. Creates a new repository from the template using `gh repo create --template`
+2. Automatically includes all template files, structure, and configuration
+3. Provides a clean starting point without Git history from the template
+4. No manual file copying or setup required
 
 **Documentation System:**
 The project will be set up with a comprehensive planning and tracking system based on the MLflow trends todo workflow:
