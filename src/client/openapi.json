@@ -1,0 +1,365 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MLflow Insights API",
+    "description": "API for MLflow Insights - providing analytics and insights for MLflow experiments",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/insights/experiments": {
+      "get": {
+        "tags": [
+          "insights"
+        ],
+        "summary": "Get Experiments",
+        "description": "Get all MLflow experiments with summary information.",
+        "operationId": "get_experiments_api_insights_experiments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExperimentSummary"
+                  },
+                  "type": "array",
+                  "title": "Response Get Experiments Api Insights Experiments Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/insights/experiments/{experiment_id}/runs": {
+      "get": {
+        "tags": [
+          "insights"
+        ],
+        "summary": "Get Experiment Runs",
+        "description": "Get runs for a specific experiment.",
+        "operationId": "get_experiment_runs_api_insights_experiments__experiment_id__runs_get",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Experiment Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RunMetrics"
+                  },
+                  "title": "Response Get Experiment Runs Api Insights Experiments  Experiment Id  Runs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/insights/experiments/{experiment_id}/insights": {
+      "get": {
+        "tags": [
+          "insights"
+        ],
+        "summary": "Get Experiment Insights",
+        "description": "Get insights and analytics for a specific experiment.",
+        "operationId": "get_experiment_insights_api_insights_experiments__experiment_id__insights_get",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Experiment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/me": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get Current User",
+        "description": "Get current user information from Databricks.",
+        "operationId": "get_current_user_api_user_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ExperimentSummary": {
+        "properties": {
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "run_count": {
+            "type": "integer",
+            "title": "Run Count"
+          },
+          "artifact_location": {
+            "type": "string",
+            "title": "Artifact Location"
+          },
+          "lifecycle_stage": {
+            "type": "string",
+            "title": "Lifecycle Stage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "experiment_id",
+          "name",
+          "run_count",
+          "artifact_location",
+          "lifecycle_stage"
+        ],
+        "title": "ExperimentSummary"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "RunMetrics": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "experiment_id": {
+            "type": "string",
+            "title": "Experiment Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "start_time": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Time"
+          },
+          "end_time": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Time"
+          },
+          "metrics": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metrics"
+          },
+          "params": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Params"
+          },
+          "tags": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "experiment_id",
+          "status",
+          "start_time",
+          "end_time",
+          "metrics",
+          "params",
+          "tags"
+        ],
+        "title": "RunMetrics"
+      },
+      "UserInfo": {
+        "properties": {
+          "userName": {
+            "type": "string",
+            "title": "Username"
+          },
+          "displayName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Displayname"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "userName",
+          "active"
+        ],
+        "title": "UserInfo"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
