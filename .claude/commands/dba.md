@@ -111,6 +111,7 @@ After the setup completes, I'll check if your Databricks app exists and create i
    - **I'll always display:**
      - **App Name:** [app name from .env.local]
      - **App URL:** [app url from app_status.sh]
+     - **App Management:** [DATABRICKS_HOST from .env.local]/apps/[app name]
 
 2. **Create app if needed:**
    - If the app doesn't exist, I'll ask if you want me to create it
@@ -121,6 +122,7 @@ After the setup completes, I'll check if your Databricks app exists and create i
    - **I'll always display:**
      - **App Name:** [app name from .env.local]
      - **App URL:** [app url from app_status.sh]
+     - **App Management:** [DATABRICKS_HOST from .env.local]/apps/[app name]
 
 3. **Test the app locally before deployment:**
    - **I'll first test the app locally to catch any issues before deploying**
@@ -149,6 +151,7 @@ After the setup completes, I'll check if your Databricks app exists and create i
    - **I'll always display:**
      - **App Name:** [app name from .env.local]
      - **App URL:** [app url from app_status.sh]
+     - **App Management:** [DATABRICKS_HOST from .env.local]/apps/[app name]
    - **Please verify that you can see the template UI at the provided URL**
 
 **This ensures your Databricks app exists, works locally, and deploys successfully before we add custom features.**
