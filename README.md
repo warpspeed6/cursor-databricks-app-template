@@ -43,28 +43,6 @@ This replaces the manual setup process and provides a complete guided experience
 
 ---
 
-## ⚠️ Important Development Rules
-
-**Before you start, please note these critical requirements:**
-
-### Never Run Python Directly
-- ✅ **CORRECT**: `uv run python script.py`
-- ✅ **CORRECT**: `uv run uvicorn server.app:app`
-- ❌ **WRONG**: `python script.py`
-- ❌ **WRONG**: `uvicorn server.app:app`
-
-### Never Run Servers Manually
-- ✅ **CORRECT**: `nohup ./watch.sh > /tmp/databricks-app-watch.log 2>&1 &` (runs in background with logging)
-- ❌ **WRONG**: `uvicorn server.app:app` or `npm run dev`
-
-### Always Use Background Execution
-- ✅ **CORRECT**: `nohup ./watch.sh > /tmp/databricks-app-watch.log 2>&1 &`
-- ❌ **WRONG**: `./watch.sh` (blocks terminal)
-
-**These rules ensure proper environment isolation and logging.**
-
----
-
 ## 📋 Prerequisites
 
 Before using this template, ensure you have:
