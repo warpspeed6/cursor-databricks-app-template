@@ -36,7 +36,30 @@ It looks like you're not in a Databricks app project. To get started:
 
 ---
 
-**If you're in a template-based Databricks app project, let's get started:**
+**If you're in a template-based Databricks app project, let me check your current progress:**
+
+## 🔍 Progress Detection
+
+**I'll first determine which step you're currently on by checking:**
+
+**Step 1 (App Setup) - Check if completed:**
+- Run `./app_status.sh` to see if .env.local is configured and app exists
+- If this works without errors, Step 1 is complete
+
+**Step 2 (Product Requirements) - Check if in progress:**
+- Check if `docs/product.md` exists and has been modified from the template
+- If modified, ask: "I see you've started working on product requirements. Would you like to continue refining them or skip to technical design?"
+
+**Step 3 (Technical Architecture) - Check if in progress:**
+- Check if `docs/design.md` exists and has been modified from the template
+- If modified, ask: "I see you've started working on technical design. Would you like to continue refining it or skip to implementation?"
+
+**Based on this detection, I'll either:**
+- **Resume from where you left off** if you're in the middle of a step
+- **Skip to the next step** if previous steps are complete
+- **Start from Step 1** if you're just getting started
+
+**Let's get started:**
 
 ## ⚠️ IMPORTANT: Progress Display Instructions
 
@@ -174,7 +197,7 @@ Describe your app idea in your own words. What do you want to build?
 - Suggesting improvements and additional features you might not have considered
 - Helping you identify potential user pain points
 - Providing examples of similar successful applications
-- Offering technical possibilities within the Databricks ecosystem
+- Helping you define what the product should do (NOT how it will be built)
 
 *Please describe your app idea, and I'll ask follow-up questions to help develop it further.*
 
@@ -182,11 +205,11 @@ Describe your app idea in your own words. What do you want to build?
 
 Based on your description, I'll engage in iterative dialogue to refine your product vision:
 
-1. **Ask targeted questions** to clarify ambiguous aspects
-2. **Suggest enhancements** based on Databricks capabilities and best practices
-3. **Help you prioritize** features by impact and feasibility
-4. **Identify edge cases** and potential challenges
-5. **Refine the vision** through natural language conversation
+1. **Ask targeted questions** to clarify what the product should do
+2. **Suggest enhancements** to the product functionality and user experience
+3. **Help you prioritize** features by user value and business impact
+4. **Identify edge cases** and user scenarios to consider
+5. **Refine the vision** through natural language conversation focused on WHAT, not HOW
 
 You can refine any aspect by saying things like:
 - "Actually, change the target users to..."
@@ -200,9 +223,9 @@ Once we've refined your vision together, I'll create a structured PRD in `docs/p
 - **Executive Summary** - Clear problem statement and solution
 - **Target Users** - Detailed user personas and use cases
 - **Feature Specifications** - Core and nice-to-have features
+- **User Stories** - Specific user workflows and interactions
 - **Success Metrics** - How you'll measure success
-- **Technical Considerations** - Databricks-specific opportunities
-- **Implementation Priority** - Recommended development phases
+- **Implementation Priority** - Recommended development phases (by user value)
 
 **Note:** This is a collaborative planning process. I will NOT start implementing features yet - we're building a solid foundation for development.
 
@@ -267,6 +290,7 @@ Once we've designed the architecture, I'll create a detailed implementation plan
 **🚨 IMPORTANT: Additive Development Approach**
 
 **The implementation plan will ONLY add to the existing system:**
+- ✅ **REPLACE** WelcomePage with actual app content (first step of implementation)
 - ✅ **ADD** new API endpoints to `server/routers/`
 - ✅ **ADD** new React components to `client/src/components/`
 - ✅ **ADD** new pages to `client/src/pages/`

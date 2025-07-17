@@ -83,6 +83,7 @@ Claude understands natural language commands for common development tasks:
 - "install [package]" → Adds dependencies using uv (Python) or bun (frontend)
 - "generate the TypeScript client" → Regenerates API client from OpenAPI spec
 - "open the UI in playwright" → Opens the frontend app in Playwright browser for testing
+- "open app" → Gets app URL from `./app_status.sh` and opens it with `open {url}`
 
 ### Development Server
 - **ALWAYS** run `./watch.sh` with nohup in background and log to file for debugging
