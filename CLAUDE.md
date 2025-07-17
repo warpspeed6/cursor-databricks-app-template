@@ -85,6 +85,20 @@ Claude understands natural language commands for common development tasks:
 - "open the UI in playwright" → Opens the frontend app in Playwright browser for testing
 - "open app" → Gets app URL from `./app_status.sh` and opens it with `open {url}`
 
+### Implementation Validation Workflow
+**During implementation, ALWAYS:**
+1. **Start development server first**: `nohup ./watch.sh > /tmp/databricks-app-watch.log 2>&1 &`
+2. **Open app with Playwright** to see current state before changes
+3. **After each implementation step:**
+   - Check logs: `tail -f /tmp/databricks-app-watch.log`
+   - Use Playwright to verify UI changes are working
+   - Take snapshots to confirm features render correctly
+   - Test user interactions and API calls
+4. **Install Playwright if needed**: `claude mcp add playwright npx '@playwright/mcp@latest'`
+5. **Iterative validation**: Test each feature before moving to next step
+
+**This ensures every implementation step is validated and working before proceeding.**
+
 ### Development Server
 - **ALWAYS** run `./watch.sh` with nohup in background and log to file for debugging
 - Watch script automatically runs in background and logs to `/tmp/databricks-app-watch.log`
