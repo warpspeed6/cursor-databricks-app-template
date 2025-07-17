@@ -1,11 +1,103 @@
 # 🚀 Databricks FastAPI App Template
 
-A modern, full-stack application template for building Databricks Apps with Python FastAPI backend and React TypeScript frontend.
+A modern, full-stack application template for building Databricks Apps with Python FastAPI backend and React TypeScript frontend. **[Claude Code](https://claude.ai/code) ready** with a custom `/dba` slash command for guided development.
 
 ![Databricks Apps](https://img.shields.io/badge/Databricks-Apps-orange)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green)
 ![React](https://img.shields.io/badge/React-18+-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)
+![Claude](https://img.shields.io/badge/Claude-Ready-purple)
+
+## 🚀 Getting Started
+
+### 1. Use This Template
+
+Click **"Use this template"** on GitHub to create your own Databricks app repository.
+
+### 2. Clone Your New Repository
+
+```bash
+git clone https://github.com/yourusername/your-databricks-app
+cd your-databricks-app
+```
+
+### 3. Open in Claude Code
+
+Open your repository in [Claude Code](https://claude.ai/code) and run the guided walkthrough:
+
+```
+/dba describe your app here
+```
+
+The `/dba` command will:
+- ✅ **Set up your development environment** with interactive configuration
+- ✅ **Test your app locally** before deployment to catch issues early
+- ✅ **Create or verify your Databricks app** exists
+- ✅ **Deploy successfully** to Databricks Apps platform
+- ✅ **Guide you through product requirements** with collaborative iteration
+- ✅ **Design your technical architecture** with ultrathinking approach
+- ✅ **Generate documentation** (`docs/product.md` and `docs/design.md`)
+- ✅ **Optionally implement your design** or provide guidance for later implementation
+
+This replaces the manual setup process and provides a complete guided experience from idea to deployed app.
+
+---
+
+## ⚠️ Important Development Rules
+
+**Before you start, please note these critical requirements:**
+
+### Never Run Python Directly
+- ✅ **CORRECT**: `uv run python script.py`
+- ✅ **CORRECT**: `uv run uvicorn server.app:app`
+- ❌ **WRONG**: `python script.py`
+- ❌ **WRONG**: `uvicorn server.app:app`
+
+### Never Run Servers Manually
+- ✅ **CORRECT**: `nohup ./watch.sh > /tmp/databricks-app-watch.log 2>&1 &` (runs in background with logging)
+- ❌ **WRONG**: `uvicorn server.app:app` or `npm run dev`
+
+### Always Use Background Execution
+- ✅ **CORRECT**: `nohup ./watch.sh > /tmp/databricks-app-watch.log 2>&1 &`
+- ❌ **WRONG**: `./watch.sh` (blocks terminal)
+
+**These rules ensure proper environment isolation and logging.**
+
+---
+
+## 📋 Prerequisites
+
+Before using this template, ensure you have:
+
+### Required Tools
+- **Python 3.12+** - Modern Python version
+- **uv** - Ultra-fast Python package manager
+- **bun** - Fast JavaScript package manager
+- **Databricks CLI** - For workspace integration
+- **Git** - Version control
+
+### Installation Commands
+```bash
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install bun
+curl -fsSL https://bun.sh/install | bash
+
+# Install Databricks CLI (see: https://docs.databricks.com/aws/en/dev-tools/cli/install)
+# macOS/Linux:
+brew install databricks
+
+# Windows:
+winget install databricks.databricks
+```
+
+### Databricks Setup
+- Valid Databricks workspace
+- Personal Access Token (PAT) or CLI profile configured
+- Appropriate permissions for app deployment
+
+---
 
 ## ✨ Features
 
@@ -100,12 +192,33 @@ See `CLAUDE.md` for the complete development guide.
 
 ## 🛠️ Development Commands
 
-| Command | Description |
-|---------|-------------|
-| `./setup.sh` | Interactive environment setup |
-| `./watch.sh` | Start dev servers (background) |
-| `./fix.sh` | Format code (Python + TypeScript) |
-| `./deploy.sh` | Deploy to Databricks Apps |
+| Command | Description | Flags |
+|---------|-------------|-------|
+| `./setup.sh` | Interactive environment setup | `--auto-close` |
+| `./watch.sh` | Start dev servers (background) | `--prod` |
+| `./fix.sh` | Format code (Python + TypeScript) | None |
+| `./deploy.sh` | Deploy to Databricks Apps | `--verbose`, `--create` |
+| `./app_status.sh` | Check deployed app status | `--verbose` |
+| `./run_app_local.sh` | Run app locally for debugging | `--verbose` |
+
+### Script Details
+
+#### Core Development Scripts
+- **`./setup.sh`** - Configures authentication, installs dependencies, sets up environment
+- **`./watch.sh`** - Starts both frontend and backend with hot reloading and auto-client generation
+- **`./fix.sh`** - Formats Python (ruff) and TypeScript (prettier) code
+
+#### Deployment & Monitoring
+- **`./deploy.sh`** - Builds, syncs, and deploys to Databricks Apps
+  - `--create` - Creates app if it doesn't exist
+  - `--verbose` - Shows detailed deployment logs
+- **`./app_status.sh`** - Shows app status with nice formatting
+  - `--verbose` - Includes full JSON response and workspace files
+
+#### Debugging Tools
+- **`./run_app_local.sh`** - Runs app locally with debug mode for troubleshooting deployment issues
+- **`scripts/make_fastapi_client.py`** - Generates TypeScript client from OpenAPI spec
+- **`scripts/generate_semver_requirements.py`** - Creates requirements.txt from pyproject.toml
 
 ## 🧪 Tech Stack
 
@@ -129,28 +242,95 @@ See `CLAUDE.md` for the complete development guide.
 - **Code Quality** - ruff (Python) + prettier (TypeScript)
 - **Background Processes** - nohup with comprehensive logging
 
-## 🔐 Authentication
+## 🔐 Authentication & Configuration
 
-Supports both Databricks authentication methods:
+### Environment Variables (`.env.local`)
 
-1. **Personal Access Token (PAT)** - For development
-2. **CLI Profile** - For production environments
+The setup script creates `.env.local` with your configuration:
 
-The setup script guides you through configuration.
+```bash
+# Authentication Type
+DATABRICKS_AUTH_TYPE=pat  # or "profile"
+
+# For PAT Authentication
+DATABRICKS_HOST=https://your-workspace.cloud.databricks.com
+DATABRICKS_TOKEN=your-personal-access-token
+
+# For Profile Authentication  
+DATABRICKS_CONFIG_PROFILE=your-profile-name
+
+# App Configuration
+DATABRICKS_APP_NAME=your-app-name
+DBA_SOURCE_CODE_PATH=/Workspace/Users/you@company.com/your-app-name
+```
+
+### Authentication Methods
+
+#### 1. Personal Access Token (PAT) - Recommended for Development
+- **Pros**: Simple setup, works everywhere
+- **Cons**: Token needs periodic renewal
+- **Setup**: Generate PAT in Databricks workspace → User Settings → Access Tokens
+
+#### 2. CLI Profile - Recommended for Production
+- **Pros**: More secure, supports OAuth
+- **Cons**: Requires CLI configuration
+- **Setup**: Run `databricks auth login --host <workspace-url> --profile <profile-name>`
+
+### Validation
+The setup script automatically validates your configuration and tests connectivity.
 
 ## 🚀 Deployment
 
-Deploy to Databricks Apps:
+### Deploy to Databricks Apps
 
 ```bash
+# Deploy existing app
 ./deploy.sh
+
+# Create and deploy new app
+./deploy.sh --create
+
+# Deploy with verbose logging
+./deploy.sh --verbose
 ```
 
-This automatically:
-- Builds the frontend
-- Generates Python requirements
-- Configures app.yaml
-- Deploys via Databricks CLI
+### Deployment Process
+
+The deployment script automatically:
+1. **Authenticates** with Databricks using your `.env.local` configuration
+2. **Creates app** (if using `--create` flag and app doesn't exist)
+3. **Builds frontend** using Vite for production
+4. **Generates requirements.txt** from pyproject.toml (avoids editable installs)
+5. **Syncs source code** to Databricks workspace
+6. **Deploys app** via Databricks CLI
+7. **Verifies deployment** and shows app URL
+
+### Monitoring Your App
+
+#### Check App Status
+```bash
+./app_status.sh          # Basic status with nice formatting
+./app_status.sh --verbose # Includes full JSON + workspace files
+```
+
+#### View App Logs
+- **Visit your app URL + `/logz`** in browser (requires OAuth authentication)
+- **Example**: `https://your-app-url.databricksapps.com/logz`
+- **Cannot be accessed via curl** - browser authentication required
+
+#### Debug Deployment Issues
+```bash
+./run_app_local.sh        # Test app locally first
+./run_app_local.sh --verbose # Detailed local debugging
+```
+
+### Deployment Troubleshooting
+
+**Common Issues:**
+- **Import errors**: Run `./run_app_local.sh` to test locally first
+- **Missing files**: Check with `./app_status.sh --verbose`
+- **Authentication**: Verify `.env.local` configuration
+- **CLI outdated**: Update with `brew upgrade databricks`
 
 ## 📝 Customization
 
@@ -161,10 +341,132 @@ This automatically:
 
 ## 🐛 Troubleshooting
 
-- **Check logs**: `tail -f /tmp/databricks-app-watch.log`
-- **View processes**: `ps aux | grep watch`
-- **Kill processes**: `pkill -f watch.sh`
-- **Reset environment**: Re-run `./setup.sh`
+### Development Server Issues
+
+#### Check Development Server Status
+```bash
+# View logs
+tail -f /tmp/databricks-app-watch.log
+
+# Check running processes
+ps aux | grep databricks-app
+
+# Check PID file
+cat /tmp/databricks-app-watch.pid
+```
+
+#### Restart Development Servers
+```bash
+# Stop servers
+kill $(cat /tmp/databricks-app-watch.pid) || pkill -f watch.sh
+
+# Start servers
+nohup ./watch.sh > /tmp/databricks-app-watch.log 2>&1 &
+```
+
+### Common Error Solutions
+
+#### Port Already in Use
+```bash
+# Kill processes using ports 3000/8000
+pkill -f "uvicorn server.app:app"
+pkill -f "vite"
+```
+
+#### TypeScript Client Missing
+```bash
+# Regenerate TypeScript client
+uv run python scripts/make_fastapi_client.py
+```
+
+#### Import Errors (like `@/lib/utils`)
+```bash
+# Check if utils.ts exists in correct location
+ls -la src/lib/utils.ts
+ls -la client/src/lib/utils.ts
+
+# Copy if missing
+cp client/src/lib/utils.ts src/lib/utils.ts
+```
+
+#### Authentication Issues
+```bash
+# Test authentication
+databricks current-user me
+
+# With profile
+databricks current-user me --profile your-profile
+
+# Reconfigure if needed
+./setup.sh
+```
+
+### Deployment Issues
+
+#### App Status Troubleshooting
+```bash
+# Check app status
+./app_status.sh
+
+# Get detailed information
+./app_status.sh --verbose
+
+# Check workspace files
+databricks workspace list "$DBA_SOURCE_CODE_PATH"
+```
+
+#### Local Testing Before Deployment
+```bash
+# Test locally to catch issues
+./run_app_local.sh
+
+# Debug mode
+./run_app_local.sh --verbose
+```
+
+### Advanced Debugging
+
+#### FastAPI Development
+- **API Documentation**: http://localhost:8000/docs
+- **OpenAPI Spec**: http://localhost:8000/openapi.json
+- **Health Check**: http://localhost:8000/health
+
+#### Frontend Development
+- **Development Server**: http://localhost:3000
+- **Network Tab**: Check browser dev tools for API calls
+- **React Query DevTools**: Available in development mode
+
+#### Log Files
+- **Development**: `/tmp/databricks-app-watch.log`
+- **Local App Test**: `/tmp/local-app-test.log`
+- **Deployment**: Visit app URL + `/logz` in browser
+
+### Reset Everything
+```bash
+# Nuclear option - reset everything
+pkill -f watch.sh
+rm -f /tmp/databricks-app-watch.pid
+rm -f /tmp/databricks-app-watch.log
+./setup.sh
+```
+
+## 🔒 Security & Legal
+
+### Security
+- **Security Policy**: See [SECURITY.md](SECURITY.md) for reporting vulnerabilities
+- **Authentication**: Uses Databricks SDK with proper credential management
+- **Environment Variables**: Stored in `.env.local` (excluded from version control)
+- **Best Practices**: Follow secure coding practices in all contributions
+
+### Legal & Licensing
+- **License**: Custom Databricks license - see [LICENSE.md](LICENSE.md)
+- **Code Ownership**: See [CODEOWNERS.txt](CODEOWNERS.txt) for maintainer information
+- **Notice**: See [NOTICE.md](NOTICE.md) for third-party notices
+
+### Privacy
+- **Data Handling**: App runs in your Databricks workspace with your data governance
+- **Credentials**: Stored locally, never transmitted except to Databricks
+- **Logging**: Development logs stored locally in `/tmp/` directory
 
 ## 📚 Learn More
 

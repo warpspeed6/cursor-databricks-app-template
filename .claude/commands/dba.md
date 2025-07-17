@@ -6,28 +6,37 @@ description: "Create a new Databricks app using the databricks-app-template"
 
 I'm helping you create a new Databricks application: **$ARGUMENTS**
 
-**First, let me check if you're in an existing Databricks app project:**
+**First, let me check if you're in the right place:**
 
 [I'll check if the current directory is a git repository by running `git rev-parse --is-inside-work-tree` and `git remote get-url origin`]
 
-**If you're in a git repository:**
-- If it's the `databricks-solutions/claude-databricks-app-template` repository → I'll help you create a new project from here (using the current directory as the template source)
-- If it's any other git repository → I'll check if it looks like a Databricks app project (has `server/app.py`, `client/`, `CLAUDE.md`, etc.)
-  - If it's a Databricks app project: "It looks like you're already in a Databricks app project. Do you want to continue working on this existing project or create a new one?"
-  - If it's not a Databricks app project: "You're in a git repository that doesn't appear to be a Databricks app. I'll help you create a new Databricks app project."
+**If you're in the `databricks-solutions/claude-databricks-app-template` repository:**
+[I'll check if the current user is nsthorat by running `whoami`]
 
-**If you're not in a git repository:**
-- I'll ask you where you want to create the new Databricks app project
+If you're **nsthorat**: You can test the `/dba` workflow directly in this template repository.
+
+If you're **not nsthorat**: You're in the template repository! To create your own Databricks app:
+
+1. **Go to GitHub**: https://github.com/databricks-solutions/claude-databricks-app-template
+2. **Click "Use this template"** → "Create a new repository"
+3. **Create your repository** with your desired name
+4. **Clone your new repository** locally
+5. **Navigate to your cloned repository** and run `/dba` again
+
+**If you're in a Databricks app project created from the template:**
+Perfect! You're already in a Databricks app project. I'll help you set up and customize your app.
+
+**If you're not in a Databricks app repository:**
+It looks like you're not in a Databricks app project. To get started:
+
+1. **Go to the template**: https://github.com/databricks-solutions/claude-databricks-app-template
+2. **Use the template** to create your own repository
+3. **Clone your new repository** locally
+4. **Navigate to your cloned repository** and run `/dba` again
 
 ---
 
-**Based on the analysis above, I'll either:**
-1. **Continue with existing project** - Skip to Step 4 (Product Requirements) if you choose to continue
-2. **Create new project** - Proceed with Step 1 below if you want to create a new project
-
----
-
-**If creating a new project, let me break this down into clear steps:**
+**If you're in a template-based Databricks app project, let's get started:**
 
 ## ⚠️ IMPORTANT: Progress Display Instructions
 
@@ -35,119 +44,46 @@ I'm helping you create a new Databricks application: **$ARGUMENTS**
 
 Show this Progress Overview before each step:
 
-Step 1: GitHub Repository Setup
+Step 1: Databricks App Setup
 
-Step 2: Databricks App Setup
+Step 2: Product Requirements Document (PRD) Creation  
 
-Step 3: Product Requirements Gathering  
+Step 3: Technical Architecture Planning
 
-Step 4: Technical Architecture Planning
-
-Step 5: Implementation Planning
+Step 4: Implementation Planning
 
 **Bold the current step** and add a **⏺** dot next to the one we're on, and add a **✅** checkmark next to completed steps. Show the sub-steps (a, b, c) only for the current step, bold exactly which sub-step they are on, and add checkmarks next to completed sub-steps like this:
 
 ✅ Step 0: Previous Step (if any were completed)
 
-⏺ **Step 1: GitHub Repository Setup**
-   - ✅ a) GitHub Account Selection ← (checkmark if complete)
-   - **b) Repository Name & Location** ← (bold if current sub-step)
-   - *c) Local Project Location* ← (italics if not yet done)
-   - *d) Create Repository from Template* ← (italics if not yet done)
-   - *e) Success & Next Steps* ← (italics if not yet done)
+⏺ **Step 1: Databricks App Setup**
+   - ✅ a) Interactive Setup ← (checkmark if complete)
+   - **b) Deploy & Test** ← (bold if current sub-step)
 
-*Step 2: Databricks App Setup*
-   - a) Interactive Setup
-   - b) Deploy & Test
+*Step 2: Product Requirements Document (PRD) Creation*
+   - a) Initial Product Vision
+   - b) Collaborative PRD Development
+   - c) Final PRD Generation
 
-*Step 3: Product Requirements Gathering*
-   - a) Problem Definition
-   - b) Target Users  
-   - c) Key Features
-
-*Step 4: Technical Architecture Planning*
+*Step 3: Technical Architecture Planning*
    - a) Data Sources
    - b) External Integrations
    - c) Scale Requirements
 
-*Step 5: Implementation Planning*
+*Step 4: Implementation Planning*
 
 ---
 
-## Step 1: GitHub Repository Setup
+## Step 1: Databricks App Setup
 
-**a) GitHub Account Selection**
-
-[I'll run this command to detect all GitHub accounts: `grep -E "^Host github" ~/.ssh/config | awk '{print $2}' | while read host; do echo "git@$host" | xargs -I {} ssh -T {} 2>&1 | grep -o "Hi [^!]*" | sed "s/Hi //" | paste -d" -> git@" - <(echo "$host"); done | nl`]
-
-Available GitHub accounts:
-[The actual accounts will be displayed here based on your SSH configuration]
-
-**Question:**
-Which GitHub account would you like to use? (Enter the number from the list above)
-
-*Please answer this question before I proceed with the next step.*
-
-**b) Repository Name & Location**
-
-[I'll create a sanitized project name from "$ARGUMENTS" by converting to lowercase, replacing spaces with hyphens, and removing special characters]
-
-**Your repository will be created at:**
-`github.com/[selected-username]/[sanitized-name-from-arguments]`
-
-**Question:**
-Does this repository name and location work for you? If not, explain what I need to fix.
-
-[If you don't accept, I'll take your English feedback, generate a new name, and ask again until you accept]
-
-*Please answer this question before I proceed with the next step.*
-
-**c) Local Project Location**
-
-**Question:**
-Where would you like to create the new project? (Provide the full path, e.g., `/Users/yourname/Code/` or `~/projects/`)
-
-*Please answer this question before I proceed with the next step.*
-
-**d) Create Repository from Template**
-
-Once you've confirmed the GitHub account, repository name, and local location, I'll:
-
-1. Create a new **private** GitHub repository using the `databricks-solutions/claude-databricks-app-template` template
-2. Use the `gh` command to create the repository with your selected account: `gh repo create [username]/[repo-name] --template databricks-solutions/claude-databricks-app-template --private`
-3. Clone the new repository to your specified local directory
-4. The repository will automatically include all template files and structure
-5. You're ready to start customizing your Databricks app!
-
-**Note:** The repository will be created as **private** by default. You can make it public later by going to the repository settings on GitHub, or ask me to do it for you after creation.
-
-*This uses GitHub's template functionality to create a clean, up-to-date copy of the template.*
-
-**e) Success & Next Steps**
-
-After successfully creating your repository and cloning it locally, I'll show you:
-
-🎉 **Repository Created Successfully!**
-- **GitHub Repository**: `https://github.com/[selected-username]/[repo-name]`
-- **Local Directory**: `[specified-path]/[repo-name]/`
-
-**What's Next?**
-You can either:
-1. **Continue here** - I'll proceed with the product requirements gathering to customize your new app
-2. **Go to your new project** - Navigate to `[specified-path]/[repo-name]/` and run `/dba` again in that context
-
-*The choice is yours! Both paths will lead to the same comprehensive setup process.*
-
----
-
-## Step 2: Databricks App Setup
+**Now that you're in your Databricks app project, let me first set up the development environment:**
 
 **a) Interactive Setup**
 
-Now that your repository is created, I'll run the interactive setup script to configure your Databricks app:
+I'll run the interactive setup script to configure your app:
 
 1. I'll use `osascript` to open a new terminal window in your project directory
-2. Run `cd [specified-path]/[repo-name] && ./setup.sh --auto-close` which will guide you through:
+2. Run `./setup.sh --auto-close` which will guide you through:
    - Databricks authentication (PAT or profile)
    - Environment variable configuration
    - Python and frontend dependency installation
@@ -157,83 +93,182 @@ Now that your repository is created, I'll run the interactive setup script to co
 
 **Command I'll execute:**
 ```bash
-osascript -e 'tell application "Terminal" to do script "cd [specified-path]/[repo-name] && ./setup.sh --auto-close"' -e 'tell application "Terminal" to activate'
+osascript -e "tell application \"Terminal\" to do script \"cd '$(pwd)' && ./setup.sh --auto-close\"" -e 'tell application "Terminal" to activate'
 ```
 
 **Note:** The setup script requires interactive input, so it must run in a separate terminal window that you can interact with.
 
 *I'll wait for the setup to complete before proceeding to the next step.*
 
-**b) Deploy & Test**
+**b) App Creation & Deploy**
 
-After the setup completes, I'll deploy the template app to make sure everything works:
+After the setup completes, I'll check if your Databricks app exists and create it if needed:
 
-1. I'll run `./deploy.sh` from your project directory to deploy the base template to Databricks Apps
-2. This will:
-   - Build the frontend application
-   - Generate Python requirements
-   - Deploy to your Databricks workspace
-   - Provide you with the app URL
-3. I'll verify the deployment was successful
-4. You can test the basic template functionality before we customize it
+1. **Check for existing app:**
+   - I'll read the app name from `.env.local` (DATABRICKS_APP_NAME)
+   - Run `databricks apps list | grep DATABRICKS_APP_NAME` to check if it exists
+   - **I'll use `./app_status.sh` to get comprehensive app status and display it nicely**
+   - **I'll always display:**
+     - **App Name:** [app name from .env.local]
+     - **App URL:** [app url from app_status.sh]
 
-**This ensures your development environment and deployment pipeline are working correctly before we add custom features.**
+2. **Create app if needed:**
+   - If the app doesn't exist, I'll ask if you want me to create it
+   - If yes, I'll use `./deploy.sh --create` which will:
+     - Create the app automatically (this can take several minutes)
+     - Then deploy the template to the newly created app
+   - **I'll use `./app_status.sh` to verify creation and show status**
+   - **I'll always display:**
+     - **App Name:** [app name from .env.local]
+     - **App URL:** [app url from app_status.sh]
 
-*I'll wait for the deployment to complete and show you the app URL.*
+3. **Test the app locally before deployment:**
+   - **I'll first test the app locally to catch any issues before deploying**
+   - **I'll run `./run_app_local.sh` in background and log to `/tmp/local-app-test.log`**
+   - **I'll read the log file to verify the app builds and starts successfully**
+   - **If local testing fails, I'll debug the issues before proceeding to deployment**
+   - **I'll always display:**
+     - **App Name:** [app name from .env.local]
+     - **Local test status:** [success/failure with details]
+
+4. **Deploy the template app:**
+   - **IMPORTANT: I will ONLY use `./deploy.sh` to deploy - no other deployment method**
+   - **I'll only proceed with deployment if the local test was successful**
+   - If the app already exists, I'll run `./deploy.sh` from your project directory to deploy the base template to Databricks Apps
+   - If the app was just created in step 2, this step is already complete from the `./deploy.sh --create` command
+   - This will:
+     - Build the frontend application
+     - Generate Python requirements
+     - Deploy to your Databricks workspace
+   - I'll verify the deployment was successful
+   - **I'll use `./app_status.sh` to check deployment status and confirm the app is running**
+   - **I'll tell you "Deployment successful!" only when `./app_status.sh` shows the app status as RUNNING**
+   - **If the app status shows deployment failed or is not running, I'll use `./app_status.sh --verbose` to check if the right files are in the workspace**
+   - **For further debugging, I can use `./run_app_local.sh` to run the app locally with debug mode**
+   - **If CLI commands are missing (like `run-local`), I'll suggest updating the Databricks CLI with: `pip install --upgrade databricks-cli`**
+   - **I'll always display:**
+     - **App Name:** [app name from .env.local]
+     - **App URL:** [app url from app_status.sh]
+   - **Please verify that you can see the template UI at the provided URL**
+
+**This ensures your Databricks app exists, works locally, and deploys successfully before we add custom features.**
+
+*I'll wait for the app creation, local testing, and deployment to complete and show you the app URL for verification.*
 
 ---
 
-## Step 3: Product Requirements Gathering
+## Step 2: Product Requirements Document (PRD) Creation
 
-**a) Problem Definition**
+**I'll work with you to create a comprehensive Product Requirements Document (PRD) through iterative collaboration. This will be saved to `docs/product.md` after we refine your vision together.**
 
-**Question:**
-What is the main problem this application will solve? (Type "skip" to skip this question)
-
-**If this question is unclear or you need help thinking through this aspect, please ask for clarification.**
-
-*Please provide a detailed answer or type "skip" before I proceed to the next question.*
-
-**b) Target Users**
+**a) Initial Product Vision**
 
 **Question:**
-Who will use this application? (Data scientists, engineers, business users, etc.) (Type "skip" to skip this question)
+Describe your app idea in your own words. What do you want to build?
 
-*Please provide a detailed answer or type "skip" before I proceed to the next question.*
+**I'll help you by:**
+- Asking clarifying questions to understand your vision
+- Suggesting improvements and additional features you might not have considered
+- Helping you identify potential user pain points
+- Providing examples of similar successful applications
+- Offering technical possibilities within the Databricks ecosystem
 
-**c) Key Features**
+*Please describe your app idea, and I'll ask follow-up questions to help develop it further.*
 
-**Question:**
-What are the 3-5 most important features this app must have? (Type "skip" to skip this question)
+**b) Collaborative PRD Development**
 
-*Please provide a detailed answer or type "skip" before I proceed to the next question.*
+Based on your description, I'll engage in iterative dialogue to refine your product vision:
+
+1. **Ask targeted questions** to clarify ambiguous aspects
+2. **Suggest enhancements** based on Databricks capabilities and best practices
+3. **Help you prioritize** features by impact and feasibility
+4. **Identify edge cases** and potential challenges
+5. **Refine the vision** through natural language conversation
+
+You can refine any aspect by saying things like:
+- "Actually, change the target users to..."
+- "Add a feature that allows..."
+- "Remove the part about..."
+- "Make it more focused on..."
+
+**c) Final PRD Generation**
+
+Once we've refined your vision together, I'll create a structured PRD in `docs/product.md` containing:
+- **Executive Summary** - Clear problem statement and solution
+- **Target Users** - Detailed user personas and use cases
+- **Feature Specifications** - Core and nice-to-have features
+- **Success Metrics** - How you'll measure success
+- **Technical Considerations** - Databricks-specific opportunities
+- **Implementation Priority** - Recommended development phases
+
+**Note:** This is a collaborative planning process. I will NOT start implementing features yet - we're building a solid foundation for development.
 
 ---
 
 ## Step 3: Technical Architecture Planning
 
-**a) Data Sources**
+**I'll engage in "ultrathinking" with you to design both the high-level architecture and detailed implementation plan. This will be saved to `docs/design.md` after our collaborative design session.**
 
-**Question:**
-What data will this app need to access? (Tables, APIs, files, etc.) (Type "skip" to skip this question)
+**a) High-Level Architecture Design**
 
-**If this technical aspect is unclear or you need help designing the architecture, please ask for clarification.**
+Based on your product requirements from Step 2, I'll work with you to design:
 
-*Please provide technical details or type "skip" before I proceed to the next question.*
+**Technology Stack & Libraries:**
+- Backend framework choices (FastAPI features to use)
+- Frontend libraries (React components, state management)
+- Database/storage solutions
+- Authentication and authorization
+- API design patterns
+- UI/UX frameworks (shadcn/ui components)
 
-**b) External Integrations**
+**Questions I'll ask:**
+- What data sources will this app need to access? (Tables, APIs, files, etc.)
+- What external systems will it integrate with?
+- How many users? How much data? Response time requirements?
+- What Databricks-specific features should we leverage?
 
-**Question:**
-What external systems will it integrate with? (Type "skip" to skip this question)
+**b) Ultrathinking Collaborative Design**
 
-*Please provide technical details or type "skip" before I proceed to the next question.*
+I'll engage in deep technical thinking with you to refine:
 
-**c) Scale Requirements**
+1. **Architecture decisions** - Why specific libraries and patterns
+2. **Data flow design** - How data moves through the system
+3. **Component structure** - Frontend and backend organization
+4. **Integration patterns** - How to connect with external systems
+5. **Performance considerations** - Optimization strategies
+6. **Security architecture** - Authentication, authorization, data protection
 
-**Question:**
-How many users? How much data? Response time requirements? (Type "skip" to skip this question)
+You can refine any aspect by saying:
+- "Let's use a different approach for..."
+- "Add caching layer for..."
+- "Change the database design to..."
+- "Simplify the authentication to..."
 
-*Please provide technical details or type "skip" before I proceed to the next question.*
+**c) Implementation Plan Creation**
+
+Once we've designed the architecture, I'll create a detailed implementation plan with:
+
+**Phase-by-phase breakdown:**
+- Phase 1: Core features and basic functionality
+- Phase 2: Advanced features and integrations
+- Phase 3: Optimization and polish
+
+**Development workflow:**
+- Specific files to create/modify
+- Order of implementation
+- Testing strategies
+- Deployment considerations
+
+**Final deliverable:** `docs/design.md` containing both high-level architecture and step-by-step implementation plan.
+
+**d) Implementation Decision**
+
+After completing the design, I'll ask: **"Are you ready to implement this design now?"**
+
+- **If yes:** I'll begin implementing according to the plan
+- **If no:** I'll provide guidance on how to implement parts of the design later by referencing `docs/product.md` and `docs/design.md`
+
+**Note:** This is where we transition from planning to potential implementation.
 
 ---
 
@@ -254,6 +289,8 @@ How many users? How much data? Response time requirements? (Type "skip" to skip 
 4. Set up `docs/done/` directory for completed task documentation
 5. Open all the planning documentation files in VS Code so you can review the project plan
 6. Commit and push all files to your GitHub repository
+
+**Then I'll move to Phase 2: Testing the First Version**
 
 **b) Final Confirmation**
 
@@ -350,11 +387,11 @@ Are you ready for me to create the project based on all your previous answers?
 - **Template Repository**: `databricks-solutions/claude-databricks-app-template`
 - **Template URL**: `https://github.com/databricks-solutions/claude-databricks-app-template`
 - **Creation Method**: GitHub template repository (not manual file copying)
-- **Output Location**: `[specified-path]/{project-name}/`
+- **Output Location**: `[current-directory]/`
 
 **Template Creation:**
 This command uses GitHub's template functionality to create new repositories:
-1. Creates a new repository from the template using `gh repo create --template`
+1. Creates a new repository from the template using GitHub's "Use this template" button
 2. Automatically includes all template files, structure, and configuration
 3. Provides a clean starting point without Git history from the template
 4. No manual file copying or setup required

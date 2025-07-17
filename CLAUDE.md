@@ -154,6 +154,11 @@ Claude understands natural language commands for common development tasks:
 - `pyproject.toml` - Python dependencies and project configuration
 - `client/package.json` - Frontend dependencies and scripts
 
+### Documentation Files
+- `docs/product.md` - Product requirements document (created during /dba workflow)
+- `docs/design.md` - Technical design document (created during /dba workflow)
+- These files are generated through iterative collaboration with the user during the /dba command
+
 ### Common Issues
 - If TypeScript client is not found, run the client generation script manually
 - If hot reload not working, restart `./watch.sh`

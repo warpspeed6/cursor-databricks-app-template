@@ -2,16 +2,30 @@
 
 # Deploy the Databricks App Template to Databricks.
 # For configuration options see README.md and .env.local.
-# Usage: ./deploy.sh [--verbose]
+# Usage: ./deploy.sh [--verbose] [--create]
 
 set -e
 
 # Parse command line arguments
 VERBOSE=false
-if [[ "$1" == "--verbose" ]]; then
-  VERBOSE=true
-  echo "🔍 Verbose mode enabled"
-fi
+CREATE_APP=false
+for arg in "$@"; do
+  case $arg in
+    --verbose)
+      VERBOSE=true
+      echo "🔍 Verbose mode enabled"
+      ;;
+    --create)
+      CREATE_APP=true
+      echo "🔧 App creation mode enabled"
+      ;;
+    *)
+      echo "Unknown argument: $arg"
+      echo "Usage: ./deploy.sh [--verbose] [--create]"
+      exit 1
+      ;;
+  esac
+done
 
 # Function to print timing info
 print_timing() {
@@ -95,6 +109,89 @@ fi
 
 echo "✅ Databricks authentication successful"
 print_timing "Authentication completed"
+
+# Function to display app info
+display_app_info() {
+  echo ""
+  echo "📱 App Name: $DATABRICKS_APP_NAME"
+  
+  # Get app URL
+  if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+    APP_URL=$(databricks apps get "$DATABRICKS_APP_NAME" --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null | python3 -c "
+import json, sys
+try:
+    data = json.load(sys.stdin)
+    print(data.get('url', 'URL not available'))
+except: 
+    print('URL not available')
+" 2>/dev/null)
+  else
+    APP_URL=$(databricks apps get "$DATABRICKS_APP_NAME" --output json 2>/dev/null | python3 -c "
+import json, sys
+try:
+    data = json.load(sys.stdin)
+    print(data.get('url', 'URL not available'))
+except: 
+    print('URL not available')
+" 2>/dev/null)
+  fi
+  
+  echo "🌐 App URL: $APP_URL"
+  echo ""
+}
+
+# Display initial app info
+display_app_info
+
+# Check if app needs to be created
+if [ "$CREATE_APP" = true ]; then
+  print_timing "Starting app creation check"
+  echo "🔍 Checking if app '$DATABRICKS_APP_NAME' exists..."
+  
+  # Check if app exists
+  if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+    APP_EXISTS=$(databricks apps list --profile "$DATABRICKS_CONFIG_PROFILE" | grep -c "^$DATABRICKS_APP_NAME " || echo "0")
+  else
+    APP_EXISTS=$(databricks apps list | grep -c "^$DATABRICKS_APP_NAME " || echo "0")
+  fi
+  
+  if [ "$APP_EXISTS" -eq 0 ]; then
+    echo "❌ App '$DATABRICKS_APP_NAME' does not exist. Creating it..."
+    echo "⏳ This may take several minutes..."
+    
+    if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+      if [ "$VERBOSE" = true ]; then
+        databricks apps create "$DATABRICKS_APP_NAME" --profile "$DATABRICKS_CONFIG_PROFILE"
+      else
+        databricks apps create "$DATABRICKS_APP_NAME" --profile "$DATABRICKS_CONFIG_PROFILE" > /dev/null 2>&1
+      fi
+    else
+      if [ "$VERBOSE" = true ]; then
+        databricks apps create "$DATABRICKS_APP_NAME"
+      else
+        databricks apps create "$DATABRICKS_APP_NAME" > /dev/null 2>&1
+      fi
+    fi
+    
+    echo "✅ App '$DATABRICKS_APP_NAME' created successfully"
+    
+    # Verify creation
+    if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+      APP_EXISTS=$(databricks apps list --profile "$DATABRICKS_CONFIG_PROFILE" | grep -c "^$DATABRICKS_APP_NAME " || echo "0")
+    else
+      APP_EXISTS=$(databricks apps list | grep -c "^$DATABRICKS_APP_NAME " || echo "0")
+    fi
+    
+    if [ "$APP_EXISTS" -eq 0 ]; then
+      echo "❌ Failed to create app '$DATABRICKS_APP_NAME'"
+      exit 1
+    fi
+  else
+    echo "✅ App '$DATABRICKS_APP_NAME' already exists"
+  fi
+  
+  print_timing "App creation check completed"
+fi
 
 mkdir -p build
 
