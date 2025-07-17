@@ -141,7 +141,7 @@ export function WelcomePage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between items-center">
                     <span>Frontend (React + Vite)</span>
-                    <Badge variant="outline">:3000</Badge>
+                    <Badge variant="outline">:5173</Badge>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Backend (FastAPI)</span>

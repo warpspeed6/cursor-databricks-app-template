@@ -28,7 +28,7 @@ This is a modern full-stack application template for Databricks Apps, featuring 
 
 ### Development Commands
 - `./setup.sh` - Interactive environment setup and dependency installation
-- `./watch.sh` - Start development servers with hot reloading (frontend:3000, backend:8000)
+- `./watch.sh` - Start development servers with hot reloading (frontend:5173, backend:8000)
 - `./fix.sh` - Format code (ruff for Python, prettier for TypeScript)
 - `./deploy.sh` - Deploy to Databricks Apps
 
@@ -102,7 +102,7 @@ Claude understands natural language commands for common development tasks:
 ### Development Server
 - **ALWAYS** run `./watch.sh` with nohup in background and log to file for debugging
 - Watch script automatically runs in background and logs to `/tmp/databricks-app-watch.log`
-- Frontend runs on http://localhost:3000
+- Frontend runs on http://localhost:5173
 - Backend runs on http://localhost:8000
 - API docs available at http://localhost:8000/docs
 - Supports hot reloading for both frontend and backend

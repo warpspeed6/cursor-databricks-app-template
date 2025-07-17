@@ -359,7 +359,7 @@ Are you ready for me to create the project based on all your previous answers?
    - Verify servers are running properly
 
 2. **Open Current App with Playwright**
-   - Navigate to the frontend URL (typically http://localhost:3000 or next available port)
+   - Navigate to the frontend URL (typically http://localhost:5173 or next available port)
    - Take a snapshot of the current WelcomePage template
    - Show you the current state before implementation begins
 

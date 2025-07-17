@@ -137,13 +137,13 @@ This interactive script will:
 ```
 
 This runs both servers in the background:
-- **Frontend**: http://localhost:3000
+- **Frontend**: http://localhost:5173
 - **Backend**: http://localhost:8000
 - **API Docs**: http://localhost:8000/docs
 
 ### 3. View Your App
 
-Open http://localhost:3000 to see the beautiful welcome page with:
+Open http://localhost:5173 to see the beautiful welcome page with:
 - Getting Started guide
 - Claude Commands reference
 - Tech Stack overview
@@ -346,7 +346,7 @@ nohup ./watch.sh > /tmp/databricks-app-watch.log 2>&1 &
 
 #### Port Already in Use
 ```bash
-# Kill processes using ports 3000/8000
+# Kill processes using ports 5173/8000
 pkill -f "uvicorn server.app:app"
 pkill -f "vite"
 ```
@@ -410,7 +410,7 @@ databricks workspace list "$DBA_SOURCE_CODE_PATH"
 - **Health Check**: http://localhost:8000/health
 
 #### Frontend Development
-- **Development Server**: http://localhost:3000
+- **Development Server**: http://localhost:5173
 - **Network Tab**: Check browser dev tools for API calls
 - **React Query DevTools**: Available in development mode
 
