@@ -257,21 +257,42 @@ Once we've designed the architecture, I'll create a detailed implementation plan
 - Phase 3: Optimization and polish
 
 **Development workflow:**
-- Specific files to create/modify
-- Order of implementation
-- Testing strategies
-- Deployment considerations
+- Specific files to create/modify (additive approach)
+- Order of implementation within existing build system
+- Testing strategies using existing framework
+- Deployment considerations with current pipeline
 
 **Final deliverable:** `docs/design.md` containing both high-level architecture and step-by-step implementation plan.
+
+**🚨 IMPORTANT: Additive Development Approach**
+
+**The implementation plan will ONLY add to the existing system:**
+- ✅ **ADD** new API endpoints to `server/routers/`
+- ✅ **ADD** new React components to `client/src/components/`
+- ✅ **ADD** new pages to `client/src/pages/`
+- ✅ **ADD** new Python libraries to `pyproject.toml`
+- ✅ **ADD** new frontend libraries with `bun add`
+- ✅ **EXTEND** existing FastAPI app configuration
+- ✅ **ENHANCE** existing React app structure
+
+**The implementation plan will NEVER:**
+- ❌ **REMOVE** the Python FastAPI server
+- ❌ **REMOVE** the React frontend build system
+- ❌ **CHANGE** the core uv/bun package management
+- ❌ **MODIFY** the existing deployment pipeline
+- ❌ **ALTER** the watch.sh development workflow
+- ❌ **REPLACE** the existing authentication setup
+
+**This ensures we build upon the carefully configured infrastructure without breaking existing functionality.**
 
 **d) Implementation Decision**
 
 After completing the design, I'll ask: **"Are you ready to implement this design now?"**
 
-- **If yes:** I'll begin implementing according to the plan
+- **If yes:** I'll begin implementing according to the plan using the additive approach
 - **If no:** I'll provide guidance on how to implement parts of the design later by referencing `docs/product.md` and `docs/design.md`
 
-**Note:** This is where we transition from planning to potential implementation.
+**Note:** This is where we transition from planning to potential implementation using the existing build system.
 
 ---
 
