@@ -36,6 +36,29 @@ It looks like you're not in a Databricks app project. To get started:
 
 ---
 
+## 🚨 CRITICAL: Databricks CLI Execution Rule 🚨
+
+**VERY IMPORTANT: NEVER run `databricks` CLI directly - ALWAYS prefix with environment setup:**
+
+```bash
+# ✅ CORRECT - Always source .env.local first
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks current-user me
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks apps list
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks workspace list /
+
+# ❌ WRONG - Never use databricks CLI directly
+databricks current-user me
+databricks apps list
+databricks workspace list /
+```
+
+**Why this is required:**
+- Ensures environment variables are loaded from .env.local
+- Exports authentication variables to environment
+- Prevents authentication failures and missing configuration
+
+---
+
 **If you're in a template-based Databricks app project, let me check your current progress:**
 
 ## 🔍 Progress Detection
@@ -105,7 +128,7 @@ Step 4: Implementation Planning
 
 I'll run the interactive setup script to configure your app:
 
-1. I'll use `osascript` to open a new terminal window in your project directory
+1. I'll use `osascript` to open a new terminal window in your project directory (preferring iTerm if available)
 2. Run `./setup.sh --auto-close` which will guide you through:
    - Databricks authentication (PAT or profile)
    - Environment variable configuration
@@ -116,7 +139,12 @@ I'll run the interactive setup script to configure your app:
 
 **Command I'll execute:**
 ```bash
-osascript -e "tell application \"Terminal\" to do script \"cd '$(pwd)' && ./setup.sh --auto-close\"" -e 'tell application "Terminal" to activate'
+# Try iTerm first if available, otherwise use Terminal
+if [ -d "/Applications/iTerm.app" ]; then
+    osascript -e 'tell application "iTerm" to create window with default profile' -e 'tell application "iTerm" to tell current session of current window to write text "cd '"$(pwd)"' && ./setup.sh --auto-close"' -e 'tell application "iTerm" to activate'
+else
+    osascript -e 'tell application "Terminal" to do script "cd '"$(pwd)"' && ./setup.sh --auto-close"' -e 'tell application "Terminal" to activate'
+fi
 ```
 
 **Note:** The setup script requires interactive input, so it must run in a separate terminal window that you can interact with.

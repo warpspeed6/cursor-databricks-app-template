@@ -390,5 +390,12 @@ if [ "$AUTO_CLOSE" = true ]; then
     echo ""
     echo "Press Enter to close this terminal..."
     read
-    osascript -e 'tell application "Terminal" to close (every window whose name contains "setup.sh")'
+    # Close appropriate terminal app
+    if [ -d "/Applications/iTerm.app" ]; then
+        # For iTerm, close the current window
+        osascript -e 'tell application "iTerm" to close current window'
+    else
+        # For Terminal, close windows containing setup.sh
+        osascript -e 'tell application "Terminal" to close (every window whose name contains "setup.sh")'
+    fi
 fi

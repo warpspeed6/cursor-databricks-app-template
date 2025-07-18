@@ -67,6 +67,27 @@ uvicorn server.app:app
 python scripts/make_fastapi_client.py
 ```
 
+### 🚨 DATABRICKS CLI EXECUTION RULE 🚨
+
+**NEVER run `databricks` CLI directly - ALWAYS prefix with environment setup:**
+
+```bash
+# ✅ CORRECT - Always source .env.local first
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks current-user me
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks apps list
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks workspace list /
+
+# ❌ WRONG - Never use databricks CLI directly
+databricks current-user me
+databricks apps list
+databricks workspace list /
+```
+
+**Why this is required:**
+- Ensures environment variables are loaded from .env.local
+- Exports authentication variables to environment
+- Prevents authentication failures and missing configuration
+
 ### Claude Natural Language Commands
 Claude understands natural language commands for common development tasks:
 
