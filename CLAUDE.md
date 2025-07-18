@@ -123,6 +123,13 @@ Claude understands natural language commands for common development tasks:
 - Check server logs after requests
 - Verify response includes expected fields
 
+### Databricks API Integration
+- **ALWAYS** reference `docs/databricks_apis/` documentation when implementing Databricks features
+- Use `docs/databricks_apis/databricks-sdk.md` for workspace, cluster, and SQL operations
+- Use `docs/databricks_apis/mlflow-genai.md` for AI agent and LLM functionality
+- Follow the documented patterns and examples for proper API usage
+- Check official documentation links in each API guide for latest updates
+
 ### Frontend Development
 - Use shadcn/ui components for consistent UI
 - Follow React Query patterns for API calls
@@ -169,6 +176,12 @@ Claude understands natural language commands for common development tasks:
 - `pyproject.toml` - Python dependencies and project configuration
 - `client/package.json` - Frontend dependencies and scripts
 - `claude_scripts/` - Test scripts created by Claude for testing functionality
+
+### API Documentation
+- `docs/databricks_apis/` - Comprehensive API documentation for Databricks integrations
+- `docs/databricks_apis/databricks-sdk.md` - Databricks SDK usage patterns
+- `docs/databricks_apis/mlflow-genai.md` - MLflow GenAI for AI agents
+- `docs/databricks_apis/workspace_apis.md` - Workspace file operations
 
 ### Documentation Files
 - `docs/product.md` - Product requirements document (created during /dba workflow)

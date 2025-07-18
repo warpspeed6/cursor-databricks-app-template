@@ -203,7 +203,9 @@ See `CLAUDE.md` for the complete development guide.
 ### Backend
 - **FastAPI** - Modern Python web framework
 - **uv** - Ultra-fast Python package management
-- **Databricks SDK** - Workspace integration
+- **Databricks SDK** - Workspace integration and API access
+- **Databricks Connect** - Local development with remote compute
+- **MLflow[databricks]** - Experiment tracking, model management, and AI agents
 - **Automatic OpenAPI** - Generated documentation
 
 ### Frontend
