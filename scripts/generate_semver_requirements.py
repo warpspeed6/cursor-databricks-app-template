@@ -14,7 +14,7 @@ except ImportError:
     import tomli as tomllib  # Fallback for older Python
   except ImportError:
     # Fallback to manual parsing if no toml library available
-    tomllib = None
+    tomllib = None  # type: ignore
 
 
 def parse_dependencies_manual(content):

@@ -1,8 +1,9 @@
 """User router for Databricks user information."""
 
-from databricks.sdk import WorkspaceClient
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+
+from server.services.user_service import UserService
 
 router = APIRouter()
 
@@ -15,21 +16,43 @@ class UserInfo(BaseModel):
   active: bool
 
 
+class UserWorkspaceInfo(BaseModel):
+  """User and workspace information."""
+
+  user: UserInfo
+  workspace: dict
+
+
 @router.get('/me', response_model=UserInfo)
 async def get_current_user():
   """Get current user information from Databricks."""
   try:
-    # Initialize Databricks client
-    # It will use environment variables or configuration profiles
-    w = WorkspaceClient()
-
-    # Get current user info
-    current_user = w.current_user.me()
+    service = UserService()
+    user_info = service.get_user_info()
 
     return UserInfo(
-      userName=current_user.userName or 'unknown',
-      displayName=current_user.displayName,
-      active=current_user.active or False,
+      userName=user_info['userName'],
+      displayName=user_info['displayName'],
+      active=user_info['active'],
     )
   except Exception as e:
     raise HTTPException(status_code=500, detail=f'Failed to fetch user info: {str(e)}')
+
+
+@router.get('/me/workspace', response_model=UserWorkspaceInfo)
+async def get_user_workspace_info():
+  """Get user information along with workspace details."""
+  try:
+    service = UserService()
+    info = service.get_user_workspace_info()
+
+    return UserWorkspaceInfo(
+      user=UserInfo(
+        userName=info['user']['userName'],
+        displayName=info['user']['displayName'],
+        active=info['user']['active'],
+      ),
+      workspace=info['workspace'],
+    )
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=f'Failed to fetch workspace info: {str(e)}')

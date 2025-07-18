@@ -112,3 +112,8 @@ classmethod-decorators = ["classmethod", "pydantic.validator"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[dependency-groups]
+dev = [
+    "tomli>=2.2.1",
+]

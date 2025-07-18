@@ -3,7 +3,6 @@
 
 import json
 
-import requests
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.errors import DatabricksError
 
@@ -25,7 +24,11 @@ def test_claude_sonnet_4():
     print(f'  State: {endpoint.state}')
 
     # Check if endpoint is ready
-    if hasattr(endpoint.state, 'ready') and endpoint.state.ready.value != 'READY':
+    if (
+      hasattr(endpoint.state, 'ready')
+      and hasattr(endpoint.state.ready, 'value')
+      and endpoint.state.ready.value != 'READY'
+    ):
       print(f'❌ Endpoint not ready. Current state: {endpoint.state}')
       return
 
@@ -49,9 +52,7 @@ def test_claude_sonnet_4():
     print(f'  Token available: {bool(client.config.token)}')
 
     if not client.config.token:
-      print(
-        '⚠️ No token directly available, but endpoint listing worked, so trying query anyway...'
-      )
+      print('⚠️ No token directly available, but endpoint listing worked, so trying query anyway...')
     else:
       print('✅ Token available')
 
@@ -132,11 +133,13 @@ def test_claude_sonnet_4():
     else:
       print(f'❌ Databricks error: {e}')
 
-  except requests.exceptions.Timeout:
-    print('❌ Request timeout - endpoint may be slow')
-
-  except requests.exceptions.ConnectionError:
-    print('❌ Connection error - check network')
+  except Exception as timeout_error:
+    if 'timeout' in str(timeout_error).lower():
+      print('❌ Request timeout - endpoint may be slow')
+    elif 'connection' in str(timeout_error).lower():
+      print('❌ Connection error - check network')
+    else:
+      print(f'❌ Request error: {timeout_error}')
 
   except Exception as e:
     print(f'❌ Unexpected error: {e}')
