@@ -32,6 +32,9 @@ fi
 if [ -f ".env.local" ]; then
   echo "Loading .env.local"
   export $(grep -v '^#' .env.local | xargs)
+  # Explicitly export Databricks variables for CLI
+  export DATABRICKS_HOST
+  export DATABRICKS_TOKEN
 fi
 
 # Check if already authenticated to avoid opening browser every time

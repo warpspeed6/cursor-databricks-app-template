@@ -70,6 +70,12 @@ test_databricks_connection() {
     local profile="$1"
     echo "🔍 Testing Databricks connection..."
     
+    # Ensure environment variables are exported for databricks CLI
+    if [ -n "$DATABRICKS_HOST" ] && [ -n "$DATABRICKS_TOKEN" ]; then
+        export DATABRICKS_HOST
+        export DATABRICKS_TOKEN
+    fi
+    
     if [ -n "$profile" ]; then
         if databricks current-user me --profile "$profile" >/dev/null 2>&1; then
             echo "✅ Successfully connected to Databricks with profile '$profile'"
@@ -192,7 +198,10 @@ if [ "$skip_env" != "true" ]; then
         
         # Test connection and show output for debugging
         echo "Running: databricks current-user me"
-        if DATABRICKS_HOST="$DATABRICKS_HOST" DATABRICKS_TOKEN="$DATABRICKS_TOKEN" databricks current-user me >/dev/null 2>&1; then
+        # Export for databricks CLI
+        export DATABRICKS_HOST="$DATABRICKS_HOST"
+        export DATABRICKS_TOKEN="$DATABRICKS_TOKEN"
+        if databricks current-user me >/dev/null 2>&1; then
             echo "✅ Successfully connected to Databricks with PAT"
         else
             echo ""
