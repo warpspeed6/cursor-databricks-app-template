@@ -167,8 +167,16 @@ After the setup completes, I'll check if your Databricks app exists and create i
 2. **Create app if needed:**
    - If the app doesn't exist, I'll ask if you want me to create it
    - If yes, I'll use `./deploy.sh --create` which will:
-     - Create the app automatically (this can take several minutes)
+     - Create the app automatically (this can take 2-3 minutes)
      - Then deploy the template to the newly created app
+   - **🚨 IMPORTANT: Always run deploy with nohup and logging:**
+     ```bash
+     nohup ./deploy.sh --create --verbose > /tmp/databricks-app-deploy.log 2>&1 &
+     ```
+   - **I'll check the log file periodically to monitor progress:**
+     ```bash
+     tail -f /tmp/databricks-app-deploy.log
+     ```
    - **I'll use `./app_status.sh` to verify creation and show status**
    - **I'll always display:**
      - **App Name:** [app name from .env.local]
