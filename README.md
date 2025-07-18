@@ -371,11 +371,11 @@ cp client/src/lib/utils.ts src/lib/utils.ts
 
 #### Authentication Issues
 ```bash
-# Test authentication
-databricks current-user me
+# Test authentication with PAT
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks current-user me
 
-# With profile
-databricks current-user me --profile your-profile
+# Test authentication with profile
+source .env.local && databricks current-user me --profile your-profile
 
 # Reconfigure if needed
 ./setup.sh
@@ -391,8 +391,11 @@ databricks current-user me --profile your-profile
 # Get detailed information
 ./app_status.sh --verbose
 
-# Check workspace files
-databricks workspace list "$DBA_SOURCE_CODE_PATH"
+# Check workspace files with PAT
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks workspace list "$DBA_SOURCE_CODE_PATH"
+
+# Check workspace files with profile
+source .env.local && databricks workspace list "$DBA_SOURCE_CODE_PATH" --profile your-profile
 ```
 
 #### Local Testing Before Deployment
