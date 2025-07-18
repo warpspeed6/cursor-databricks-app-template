@@ -112,9 +112,9 @@ Claude understands natural language commands for common development tasks:
 
 ### Code Quality
 - Use `./fix.sh` for code formatting before commits
-- Python: ruff for formatting and linting
+- Python: ruff for formatting and linting, ty for type checking
 - TypeScript: prettier for formatting, ESLint for linting
-- Type checking with TypeScript
+- Type checking with TypeScript and ty (Python)
 
 ### API Development
 - FastAPI automatically generates OpenAPI spec
@@ -168,6 +168,7 @@ Claude understands natural language commands for common development tasks:
 - `scripts/make_fastapi_client.py` - TypeScript client generator
 - `pyproject.toml` - Python dependencies and project configuration
 - `client/package.json` - Frontend dependencies and scripts
+- `claude_scripts/` - Test scripts created by Claude for testing functionality
 
 ### Documentation Files
 - `docs/product.md` - Product requirements document (created during /dba workflow)

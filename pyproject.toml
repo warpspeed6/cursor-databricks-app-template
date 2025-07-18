@@ -8,7 +8,7 @@ authors = [
 dependencies = [
     "fastapi>=0.104.1",
     "uvicorn[standard]>=0.24.0",
-    "databricks-sdk>=0.14.0",
+    "databricks-sdk==0.59.0",
     "pydantic>=2.5.0",
     "python-multipart>=0.0.6",
     "python-dotenv>=1.0.0",
@@ -17,13 +17,14 @@ dependencies = [
     "requests>=2.32.4",
     "rich>=14.0.0",
     "click>=8.1.0",
+    "databricks-connect>=16.1.6",  # Latest version compatible with Python 3.11
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
 dev = [
     "ruff>=0.1.6",
-    "databricks-connect>=14.0.0",
+    "ty>=0.0.1a14",  # Type checker for development only
     "watchdog>=3.0.0",
     "pytest>=7.4.0",
     "pytest-asyncio>=0.21.0",
