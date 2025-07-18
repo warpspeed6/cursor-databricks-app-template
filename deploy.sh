@@ -150,10 +150,13 @@ if [ "$CREATE_APP" = true ]; then
   
   # Check if app exists
   if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
-    APP_EXISTS=$(databricks apps list --profile "$DATABRICKS_CONFIG_PROFILE" | grep -c "^$DATABRICKS_APP_NAME " || echo "0")
+    APP_EXISTS=$(databricks apps list --profile "$DATABRICKS_CONFIG_PROFILE" 2>/dev/null | grep -c "^$DATABRICKS_APP_NAME " 2>/dev/null || echo "0")
   else
-    APP_EXISTS=$(databricks apps list | grep -c "^$DATABRICKS_APP_NAME " || echo "0")
+    APP_EXISTS=$(databricks apps list 2>/dev/null | grep -c "^$DATABRICKS_APP_NAME " 2>/dev/null || echo "0")
   fi
+  
+  # Clean up the variable (remove any whitespace/newlines)
+  APP_EXISTS=$(echo "$APP_EXISTS" | head -1 | tr -d '\n')
   
   if [ "$APP_EXISTS" -eq 0 ]; then
     echo "❌ App '$DATABRICKS_APP_NAME' does not exist. Creating it..."
