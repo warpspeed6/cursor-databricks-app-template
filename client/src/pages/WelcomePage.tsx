@@ -23,6 +23,7 @@ interface UserInfo {
   userName: string;
   displayName?: string;
   active: boolean;
+  emails: string[];
 }
 
 async function fetchUserInfo(): Promise<UserInfo> {
@@ -73,7 +74,7 @@ export function WelcomePage() {
                     {userInfo.displayName || userInfo.userName}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {userInfo.userName}
+                    {userInfo.emails[0] || userInfo.userName}
                   </p>
                 </div>
                 <Badge variant={userInfo.active ? "default" : "secondary"}>

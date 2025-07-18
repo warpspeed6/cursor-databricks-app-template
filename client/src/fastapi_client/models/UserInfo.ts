@@ -6,7 +6,9 @@
  * Databricks user information.
  */
 export type UserInfo = {
-  userName: string;
-  displayName?: string | null;
-  active: boolean;
+    userName: string;
+    displayName?: (string | null);
+    active: boolean;
+    emails?: Array<string>;
 };
+

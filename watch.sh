@@ -109,7 +109,9 @@ echo "✅ Development servers started!"
 if [ "$PROD_MODE" = true ]; then
   echo "App: http://localhost:8000"
 else
-  echo "Frontend: http://localhost:3000"
+  # Detect the actual frontend port (default 5173, or next available)
+  FRONTEND_PORT=$(netstat -an | grep LISTEN | grep ':517[3-9]' | head -1 | sed 's/.*:\([0-9]*\).*/\1/' || echo "5173")
+  echo "Frontend: http://localhost:$FRONTEND_PORT"
   echo "Backend:  http://localhost:8000"
 fi
 echo "API Docs: http://localhost:8000/docs"

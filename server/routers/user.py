@@ -14,6 +14,7 @@ class UserInfo(BaseModel):
   userName: str
   displayName: str | None = None
   active: bool
+  emails: list[str] = []
 
 
 class UserWorkspaceInfo(BaseModel):
@@ -34,6 +35,7 @@ async def get_current_user():
       userName=user_info['userName'],
       displayName=user_info['displayName'],
       active=user_info['active'],
+      emails=user_info['emails'],
     )
   except Exception as e:
     raise HTTPException(status_code=500, detail=f'Failed to fetch user info: {str(e)}')
