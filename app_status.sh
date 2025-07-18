@@ -100,6 +100,7 @@ try:
     
     print('📱 App Name: ${DATABRICKS_APP_NAME}')
     print('🌐 App URL: ' + data.get('url', 'Not available'))
+    print('👤 Service Principal: ' + data.get('service_principal_name', 'Not available'))
     print('')
     
     # App Status
@@ -142,6 +143,27 @@ try:
     print(f'   Updated: {data.get(\"update_time\", \"Unknown\")}')
     print(f'   Creator: {data.get(\"creator\", \"Unknown\")}')
     print('')
+    
+    # Verbose mode additional details
+    if '${VERBOSE}' == 'true':
+        print('🔍 Verbose Details:')
+        print(f'   Service Principal ID: {data.get(\"service_principal_id\", \"Not available\")}')
+        print(f'   Service Principal Client ID: {data.get(\"service_principal_client_id\", \"Not available\")}')
+        print(f'   OAuth2 App Client ID: {data.get(\"oauth2_app_client_id\", \"Not available\")}')
+        print(f'   OAuth2 App Integration ID: {data.get(\"oauth2_app_integration_id\", \"Not available\")}')
+        print(f'   Budget Policy ID: {data.get(\"effective_budget_policy_id\", \"Not available\")}')
+        print(f'   Default Source Code Path: {data.get(\"default_source_code_path\", \"Not available\")}')
+        print(f'   Updater: {data.get(\"updater\", \"Not available\")}')
+        
+        # Active deployment info
+        active_deployment = data.get('active_deployment', {})
+        if active_deployment:
+            print(f'   Deployment ID: {active_deployment.get(\"deployment_id\", \"Not available\")}')
+            print(f'   Deployment Mode: {active_deployment.get(\"mode\", \"Not available\")}')
+            deployment_artifacts = active_deployment.get('deployment_artifacts', {})
+            if deployment_artifacts:
+                print(f'   Deployment Artifacts Path: {deployment_artifacts.get(\"source_code_path\", \"Not available\")}')
+        print('')
     
 except Exception as e:
     print(f'Error parsing app status: {e}')
