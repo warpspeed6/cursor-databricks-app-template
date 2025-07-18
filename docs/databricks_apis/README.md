@@ -19,29 +19,29 @@ client = WorkspaceClient()
 
 ## API Categories
 
+### [Databricks SDK](databricks_sdk.md)
+- Comprehensive SDK usage patterns
+- Authentication and configuration
+- Core APIs overview
+- FastAPI integration examples
+
 ### [Workspace APIs](workspace_apis.md)
 - File operations (upload, download, list)
 - Directory management
 - Notebook operations
 - Search and metadata
 
-### [Cluster APIs](cluster_apis.md)
-- Cluster lifecycle management
-- Configuration and policies
-- Status monitoring
-- Event tracking
+### [MLflow GenAI](mlflow_genai.md)
+- AI agent tracing and observability
+- Automated quality evaluation
+- Feedback and continuous improvement
+- Application lifecycle management
 
-### [SQL Warehouse APIs](sql_warehouse_apis.md)
-- Query execution
-- Warehouse management
-- Result retrieval
-- Statement monitoring
-
-### [MLflow APIs](mlflow_apis.md)
-- Experiment tracking
-- Model management
-- AI agent deployment
-- Artifact handling
+### [Model Serving](model_serving.md)
+- List and inspect serving endpoints
+- Query serving endpoints
+- Batch inference
+- Error handling and best practices
 
 ## Common Patterns
 

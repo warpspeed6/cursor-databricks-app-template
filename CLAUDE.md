@@ -125,8 +125,10 @@ Claude understands natural language commands for common development tasks:
 
 ### Databricks API Integration
 - **ALWAYS** reference `docs/databricks_apis/` documentation when implementing Databricks features
-- Use `docs/databricks_apis/databricks-sdk.md` for workspace, cluster, and SQL operations
-- Use `docs/databricks_apis/mlflow-genai.md` for AI agent and LLM functionality
+- Use `docs/databricks_apis/databricks_sdk.md` for workspace, cluster, and SQL operations
+- Use `docs/databricks_apis/mlflow_genai.md` for AI agent and LLM functionality
+- Use `docs/databricks_apis/model_serving.md` for model serving endpoints and inference
+- Use `docs/databricks_apis/workspace_apis.md` for file operations and directory management
 - Follow the documented patterns and examples for proper API usage
 - Check official documentation links in each API guide for latest updates
 
@@ -179,8 +181,9 @@ Claude understands natural language commands for common development tasks:
 
 ### API Documentation
 - `docs/databricks_apis/` - Comprehensive API documentation for Databricks integrations
-- `docs/databricks_apis/databricks-sdk.md` - Databricks SDK usage patterns
-- `docs/databricks_apis/mlflow-genai.md` - MLflow GenAI for AI agents
+- `docs/databricks_apis/databricks_sdk.md` - Databricks SDK usage patterns
+- `docs/databricks_apis/mlflow_genai.md` - MLflow GenAI for AI agents
+- `docs/databricks_apis/model_serving.md` - Model serving endpoints and inference
 - `docs/databricks_apis/workspace_apis.md` - Workspace file operations
 
 ### Documentation Files
