@@ -1,4 +1,4 @@
-# 🚀 Databricks FastAPI App Template
+# 🚀 Claude Code + Databricks App Template
 
 A modern, full-stack application template for building Databricks Apps with Python FastAPI backend and React TypeScript frontend. **[Claude Code](https://claude.ai/code) ready** with a custom `/dba` slash command for guided development.
 
