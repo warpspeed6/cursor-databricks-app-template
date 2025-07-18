@@ -115,8 +115,21 @@ Claude understands natural language commands for common development tasks:
    - Use Playwright to verify UI changes are working
    - Take snapshots to confirm features render correctly
    - Test user interactions and API calls
-4. **Install Playwright if needed**: `claude mcp add playwright npx '@playwright/mcp@latest'`
-5. **Iterative validation**: Test each feature before moving to next step
+4. **🚨 CRITICAL: FastAPI Endpoint Verification**
+   - **IMPORTANT: After adding ANY new FastAPI endpoint, MUST curl the endpoint to verify it works**
+   - **NEVER move on to the next step until the endpoint is verified with curl**
+   - **Example verification commands:**
+     ```bash
+     # Test GET endpoint
+     curl -s http://localhost:8000/api/new-endpoint | jq
+     
+     # Test POST endpoint
+     curl -X POST -H "Content-Type: application/json" -d '{"key":"value"}' http://localhost:8000/api/new-endpoint | jq
+     ```
+   - **Show the curl response to confirm the endpoint works correctly**
+   - **If the endpoint fails, debug and fix it before proceeding**
+5. **Install Playwright if needed**: `claude mcp add playwright npx '@playwright/mcp@latest'`
+6. **Iterative validation**: Test each feature before moving to next step
 
 **This ensures every implementation step is validated and working before proceeding.**
 

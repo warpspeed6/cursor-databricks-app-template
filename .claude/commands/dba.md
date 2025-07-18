@@ -426,7 +426,21 @@ Are you ready for me to create the project based on all your previous answers?
    - Guide you through: `claude mcp add playwright npx '@playwright/mcp@latest'`
    - Ensure Playwright is properly configured for testing
 
-4. **Iterative Validation**
+4. **🚨 CRITICAL: FastAPI Endpoint Verification**
+   - **IMPORTANT: After adding ANY new FastAPI endpoint, I MUST curl the endpoint to verify it works**
+   - **I will NEVER move on to the next step until the endpoint is verified with curl**
+   - **Example verification commands:**
+     ```bash
+     # Test GET endpoint
+     curl -s http://localhost:8000/api/new-endpoint | jq
+     
+     # Test POST endpoint
+     curl -X POST -H "Content-Type: application/json" -d '{"key":"value"}' http://localhost:8000/api/new-endpoint | jq
+     ```
+   - **I will show the curl response to confirm the endpoint works correctly**
+   - **If the endpoint fails, I will debug and fix it before proceeding**
+
+5. **Iterative Validation**
    - Test each feature as it's implemented
    - Verify both UI and API functionality
    - Check logs for any issues before proceeding to next step
