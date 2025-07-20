@@ -49,9 +49,12 @@ This replaces the manual setup process and provides a complete guided experience
 
 ## 🎬 Demo
 
-This is a [40-minute walkthrough demo](https://drive.google.com/file/d/1Jn5zqnqB-FLSBamL08K9Pd0sPs8cbwxR/view?usp=sharing) of making an app from start to finish using the `/dba` command in Claude Code.
+This is a [40-minute walkthrough demo](https://youtu.be/jDBTfxk1r7Q) of making an app from start to finish using the `/dba` command in Claude Code.
 
-[![claude_dba_hero](https://github.com/user-attachments/assets/75492599-e5a1-4855-a9d1-c76d45c48da8)](https://drive.google.com/file/d/1Jn5zqnqB-FLSBamL08K9Pd0sPs8cbwxR/view?usp=sharing)
+**Working Example**: [trace-summary-dashboard branch](https://github.com/databricks-solutions/claude-databricks-app-template/tree/trace-summary-dashboard) - Complete implementation from the video  
+**See the Changes**: [View diff](https://github.com/databricks-solutions/claude-databricks-app-template/compare/trace-summary-dashboard?expand=1) - All code changes made during the demo
+
+[![claude_dba_hero](https://github.com/user-attachments/assets/75492599-e5a1-4855-a9d1-c76d45c48da8)](https://youtu.be/jDBTfxk1r7Q)
 
 ---
 
