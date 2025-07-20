@@ -10,10 +10,6 @@ A modern, full-stack application template for building Databricks Apps with Pyth
 
 ## 🚀 Getting Started
 
-### 0. Demo video
-
-<img width="1299" height="732" alt="claude_dba_hero" src="https://github.com/user-attachments/assets/75492599-e5a1-4855-a9d1-c76d45c48da8" />
-
 ### 1. Use This Template
 
 Click **"Use this template"** on GitHub to create your own Databricks app repository.
@@ -44,6 +40,14 @@ The `/dba` command will:
 - ✅ **Optionally implement your design** or provide guidance for later implementation
 
 This replaces the manual setup process and provides a complete guided experience from idea to deployed app.
+
+---
+
+## 🎬 Demo
+
+This is a [40-minute walkthrough demo](https://drive.google.com/file/d/1Jn5zqnqB-FLSBamL08K9Pd0sPs8cbwxR/view?usp=sharing) of making an app from start to finish using the `/dba` command in Claude Code.
+
+[![claude_dba_hero](https://github.com/user-attachments/assets/75492599-e5a1-4855-a9d1-c76d45c48da8)](https://drive.google.com/file/d/1Jn5zqnqB-FLSBamL08K9Pd0sPs8cbwxR/view?usp=sharing)
 
 ---
 
