@@ -1,6 +1,10 @@
 # 🚀 Claude Code + Databricks App Template
 
-A modern, full-stack application template for building Databricks Apps with Python FastAPI backend and React TypeScript frontend. **[Claude Code](https://claude.ai/code) ready** with a custom `/dba` slash command for guided development.
+A modern, full-stack application template for building Databricks Apps with Python FastAPI backend and React TypeScript frontend. 
+
+**[Claude Code](https://claude.ai/code)-centric workflow** - a single `/dba` command transforms your ideas into deployed applications. Claude guides you through product requirements, technical design, implementation, and deployment. It knows the entire Databricks Apps ecosystem and self-heals by automatically diagnosing and fixing issues.
+
+The `/dba` workflow acts as your product strategist and development architect - brainstorming ideas with you, then building everything all the way to deployment.
 
 ![Databricks Apps](https://img.shields.io/badge/Databricks-Apps-orange)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green)
