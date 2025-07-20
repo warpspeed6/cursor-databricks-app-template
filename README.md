@@ -10,6 +10,10 @@ A modern, full-stack application template for building Databricks Apps with Pyth
 
 ## 🚀 Getting Started
 
+### 0. Demo video
+
+<img width="1299" height="732" alt="claude_dba_hero" src="https://github.com/user-attachments/assets/75492599-e5a1-4855-a9d1-c76d45c48da8" />
+
 ### 1. Use This Template
 
 Click **"Use this template"** on GitHub to create your own Databricks app repository.
