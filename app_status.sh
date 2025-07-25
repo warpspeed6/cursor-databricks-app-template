@@ -49,7 +49,7 @@ if [ "$DATABRICKS_AUTH_TYPE" = "pat" ]; then
   export DATABRICKS_TOKEN="$DATABRICKS_TOKEN"
   
   # Test connection
-  if ! databricks current-user me >/dev/null 2>&1; then
+  if ! uvx databricks current-user me >/dev/null 2>&1; then
     echo "❌ PAT authentication failed. Please check your credentials."
     exit 1
   fi
@@ -62,7 +62,7 @@ elif [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
   fi
   
   # Test connection
-  if ! databricks current-user me --profile "$DATABRICKS_CONFIG_PROFILE" >/dev/null 2>&1; then
+  if ! uvx databricks current-user me --profile "$DATABRICKS_CONFIG_PROFILE" >/dev/null 2>&1; then
     echo "❌ Profile authentication failed. Please check your profile configuration."
     exit 1
   fi
@@ -176,14 +176,14 @@ echo "🔍 Getting app status for '$DATABRICKS_APP_NAME'..."
 echo ""
 
 if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
-  APP_JSON=$(databricks apps get "$DATABRICKS_APP_NAME" --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null)
+  APP_JSON=$(uvx databricks apps get "$DATABRICKS_APP_NAME" --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null)
 else
-  APP_JSON=$(databricks apps get "$DATABRICKS_APP_NAME" --output json 2>/dev/null)
+  APP_JSON=$(uvx databricks apps get "$DATABRICKS_APP_NAME" --output json 2>/dev/null)
 fi
 
 if [ $? -ne 0 ] || [ -z "$APP_JSON" ]; then
   echo "❌ Failed to get app status for '$DATABRICKS_APP_NAME'"
-  echo "💡 Make sure the app exists by running: databricks apps list"
+  echo "💡 Make sure the app exists by running: uvx databricks apps list"
   exit 1
 fi
 
@@ -200,9 +200,9 @@ if [ "$VERBOSE" = true ]; then
   echo ""
   
   if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
-    WORKSPACE_LIST=$(databricks workspace list "$DBA_SOURCE_CODE_PATH" --profile "$DATABRICKS_CONFIG_PROFILE" 2>/dev/null)
+    WORKSPACE_LIST=$(uvx databricks workspace list "$DBA_SOURCE_CODE_PATH" --profile "$DATABRICKS_CONFIG_PROFILE" 2>/dev/null)
   else
-    WORKSPACE_LIST=$(databricks workspace list "$DBA_SOURCE_CODE_PATH" 2>/dev/null)
+    WORKSPACE_LIST=$(uvx databricks workspace list "$DBA_SOURCE_CODE_PATH" 2>/dev/null)
   fi
   
   if [ $? -ne 0 ] || [ -z "$WORKSPACE_LIST" ]; then
@@ -217,10 +217,10 @@ fi
 # Show helpful commands
 echo "💡 Useful commands:"
 if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
-  echo "   List all apps: databricks apps list --profile $DATABRICKS_CONFIG_PROFILE"
+  echo "   List all apps: uvx databricks apps list --profile $DATABRICKS_CONFIG_PROFILE"
   echo "   View logs: Visit ${DATABRICKS_APP_NAME} URL + /logz in browser"
 else
-  echo "   List all apps: databricks apps list"
+  echo "   List all apps: uvx databricks apps list"
   echo "   View logs: Visit ${DATABRICKS_APP_NAME} URL + /logz in browser"
 fi
 echo "   Deploy app: ./deploy.sh"

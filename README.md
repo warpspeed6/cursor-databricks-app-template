@@ -25,9 +25,11 @@ git clone https://github.com/yourusername/your-databricks-app
 cd your-databricks-app
 ```
 
-### 3. Open in Claude Code
+### 3. Choose Your Development Approach
 
-Open your repository in [Claude Code](https://claude.ai/code) and run the guided walkthrough:
+#### Option A: Automatic Workflow with `/dba` (Recommended)
+
+Open your repository in [Claude Code](https://claude.ai/code) and run the fully automated, opinionated workflow:
 
 ```
 /dba describe your app here
@@ -43,7 +45,24 @@ The `/dba` command will:
 - ✅ **Generate documentation** (`docs/product.md` and `docs/design.md`)
 - ✅ **Optionally implement your design** or provide guidance for later implementation
 
-This replaces the manual setup process and provides a complete guided experience from idea to deployed app.
+This provides a complete guided experience from idea to deployed app.
+
+#### Option B: Manual Setup with Full Control
+
+If you prefer to have full control over the development process:
+
+1. **Run the setup script** to configure your environment:
+   ```bash
+   ./setup.sh
+   ```
+
+2. **Open in Claude Code** and develop normally. Claude will:
+   - Know about your entire repository structure
+   - Understand the Databricks Apps framework
+   - Help with any development tasks you request
+   - Use the natural language commands documented below
+
+This approach gives you complete flexibility while still benefiting from Claude's knowledge of the codebase and all available commands.
 
 ---
 
@@ -63,27 +82,16 @@ This is a [40-minute walkthrough demo](https://youtu.be/jDBTfxk1r7Q) of making a
 Before using this template, ensure you have:
 
 ### Required Tools
-- **Python 3.12+** - Modern Python version
-- **uv** - Ultra-fast Python package manager
-- **bun** - Fast JavaScript package manager
-- **Databricks CLI** - For workspace integration
 - **Git** - Version control
+- **uv** - Ultra-fast Python package manager (auto-manages Python versions)
+- **bun** - Fast JavaScript package manager
+- **Node.js 18+** - Required for Playwright
+- **Homebrew** - Package manager (macOS only, auto-checked)
+- **Playwright** - Browser automation and testing (optional but recommended)
 
-### Installation Commands
-```bash
-# Install uv
-curl -LsSf https://astral.sh/uv/install.sh | sh
+Note: Python 3.11+ and Databricks CLI are automatically managed by uv
 
-# Install bun
-curl -fsSL https://bun.sh/install | bash
-
-# Install Databricks CLI (see: https://docs.databricks.com/aws/en/dev-tools/cli/install)
-# macOS/Linux:
-brew install databricks
-
-# Windows:
-winget install databricks.databricks
-```
+The `setup.sh` script will help you install any missing dependencies with interactive prompts.
 
 ### Databricks Setup
 - Valid Databricks workspace
@@ -120,18 +128,28 @@ winget install databricks.databricks
 │   ├── package.json         # Frontend dependencies
 │   └── vite.config.ts       # Vite configuration
 │
+├── setup_utils/               # Modular setup system
+│   ├── utils.sh              # Shared utilities
+│   ├── check_git.sh          # Git dependency check
+│   ├── check_uv.sh           # uv package manager check
+│   ├── check_bun.sh          # Bun package manager check
+│   ├── check_node.sh         # Node.js 18+ check
+│   └── check_homebrew.sh     # Homebrew check (macOS)
+│
 ├── scripts/                   # Development automation
-│   ├── setup.sh             # Environment setup
 │   ├── watch.sh             # Development server
 │   ├── fix.sh               # Code formatting
 │   └── deploy.sh            # Deployment
 │
+├── setup.sh                  # Main setup script
 ├── pyproject.toml            # Python dependencies
 ├── app.yaml                  # Databricks Apps config
 └── CLAUDE.md                 # Development guide
 ```
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Manual Setup)
+
+> **Note:** This section is for manual setup. For the automated workflow, use the `/dba` command described above.
 
 ### 1. Setup Environment
 
@@ -140,10 +158,14 @@ winget install databricks.databricks
 ```
 
 This interactive script will:
-- Set up Databricks authentication (PAT or profile)
-- Install Python dependencies with uv
-- Install frontend dependencies with bun
-- Configure environment variables
+- **Check system dependencies** (Git, uv, Bun, Node.js 18+)
+- **Install missing dependencies** with interactive prompts and OS-specific commands
+- **Set up Databricks authentication** (PAT or profile)
+- **Install Python dependencies** with uv (including Python 3.11+ if needed)
+- **Install frontend dependencies** with bun
+- **Configure environment variables**
+
+The setup script uses a modular design with individual dependency checkers in the `setup_utils/` directory for better maintainability.
 
 ### 2. Start Development
 
@@ -269,7 +291,7 @@ DBA_SOURCE_CODE_PATH=/Workspace/Users/you@company.com/your-app-name
 #### 2. CLI Profile - Recommended for Production
 - **Pros**: More secure, supports OAuth
 - **Cons**: Requires CLI configuration
-- **Setup**: Run `databricks auth login --host <workspace-url> --profile <profile-name>`
+- **Setup**: Run `uvx databricks auth login --host <workspace-url> --profile <profile-name>`
 
 ### Validation
 The setup script automatically validates your configuration and tests connectivity.
@@ -325,7 +347,7 @@ The deployment script automatically:
 - **Import errors**: Run `./run_app_local.sh` to test locally first
 - **Missing files**: Check with `./app_status.sh --verbose`
 - **Authentication**: Verify `.env.local` configuration
-- **CLI outdated**: Update with `brew upgrade databricks`
+- **CLI outdated**: Since we use `uvx databricks`, the CLI is always up-to-date
 
 ## 📝 Customization
 
@@ -387,7 +409,7 @@ cp client/src/lib/utils.ts src/lib/utils.ts
 #### Authentication Issues
 ```bash
 # Test authentication (works for both PAT and profile)
-source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks current-user me
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && uvx databricks current-user me
 
 # Reconfigure if needed
 ./setup.sh
@@ -404,7 +426,7 @@ source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databr
 ./app_status.sh --verbose
 
 # Check workspace files
-source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks workspace list "$DBA_SOURCE_CODE_PATH"
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && uvx databricks workspace list "$DBA_SOURCE_CODE_PATH"
 ```
 
 #### Local Testing Before Deployment

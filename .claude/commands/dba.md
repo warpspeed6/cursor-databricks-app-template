@@ -139,12 +139,8 @@ I'll run the interactive setup script to configure your app:
 
 **Command I'll execute:**
 ```bash
-# Try iTerm first if available, otherwise use Terminal
-if [ -d "/Applications/iTerm.app" ]; then
-    osascript -e 'tell application "iTerm" to create window with default profile' -e 'tell application "iTerm" to tell current session of current window to write text "cd '"$(pwd)"' && ./setup.sh --auto-close"' -e 'tell application "iTerm" to activate'
-else
-    osascript -e 'tell application "Terminal" to do script "cd '"$(pwd)"' && ./setup.sh --auto-close"' -e 'tell application "Terminal" to activate'
-fi
+# Use the open_setup.sh script which handles terminal detection gracefully
+./open_setup.sh
 ```
 
 **Note:** The setup script requires interactive input, so it must run in a separate terminal window that you can interact with.

@@ -25,6 +25,57 @@ fi
 echo "🚀 Databricks App Template Setup"
 echo "================================="
 
+# Get the directory of this script
+SETUP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source shared utilities
+source "$SETUP_DIR/setup_utils/utils.sh"
+
+# Check for required tools
+echo ""
+echo "🔧 Checking System Dependencies"
+echo "================================"
+echo ""
+
+OS=$(get_os)
+echo "🖥️  Detected OS: $OS"
+echo ""
+
+# Check dependencies in the right order
+echo "🍺 Checking Homebrew (macOS only)..."
+if ! source "$SETUP_DIR/setup_utils/check_homebrew.sh" && check_homebrew; then
+    exit 1
+fi
+
+echo ""
+echo "📝 Checking Git..."
+if ! source "$SETUP_DIR/setup_utils/check_git.sh" && check_git; then
+    exit 1
+fi
+
+echo ""
+echo "📦 Checking uv (Python package manager)..."
+if ! source "$SETUP_DIR/setup_utils/check_uv.sh" && check_uv; then
+    exit 1
+fi
+
+
+echo ""
+echo "🚀 Checking Bun (JavaScript package manager)..."
+if ! source "$SETUP_DIR/setup_utils/check_bun.sh" && check_bun; then
+    exit 1
+fi
+
+echo ""
+echo "🟢 Checking Node.js 18+..."
+if ! source "$SETUP_DIR/setup_utils/check_node.sh" && check_node; then
+    exit 1
+fi
+
+echo ""
+echo "🎉 All required system dependencies are installed!"
+echo ""
+
 # Function to prompt for input with default value
 prompt_with_default() {
     local prompt="$1"
@@ -65,19 +116,19 @@ update_env_value() {
     fi
 }
 
-# Function to test databricks connection
+# Function to test uvx databricks connection
 test_databricks_connection() {
     local profile="$1"
     echo "🔍 Testing Databricks connection..."
     
-    # Ensure environment variables are exported for databricks CLI
+    # Ensure environment variables are exported for uvx databricks CLI
     if [ -n "$DATABRICKS_HOST" ] && [ -n "$DATABRICKS_TOKEN" ]; then
         export DATABRICKS_HOST
         export DATABRICKS_TOKEN
     fi
     
     if [ -n "$profile" ]; then
-        if databricks current-user me --profile "$profile" >/dev/null 2>&1; then
+        if uvx databricks current-user me --profile "$profile" >/dev/null 2>&1; then
             echo "✅ Successfully connected to Databricks with profile '$profile'"
             return 0
         else
@@ -85,7 +136,7 @@ test_databricks_connection() {
             return 1
         fi
     else
-        if databricks current-user me >/dev/null 2>&1; then
+        if uvx databricks current-user me >/dev/null 2>&1; then
             echo "✅ Successfully connected to Databricks"
             return 0
         else
@@ -154,7 +205,7 @@ if [ "$skip_env" != "true" ]; then
         update_env_value "DATABRICKS_AUTH_TYPE" "pat" "Databricks Authentication Type"
         
         if [ -z "$DATABRICKS_HOST" ]; then
-            prompt_with_default "Databricks Host" "https://your-workspace.cloud.databricks.com" "DATABRICKS_HOST"
+            prompt_with_default "Databricks Host" "https://your-workspace.cloud.uvx databricks.com" "DATABRICKS_HOST"
         else
             prompt_with_default "Databricks Host" "$DATABRICKS_HOST" "DATABRICKS_HOST"
         fi
@@ -197,18 +248,18 @@ if [ "$skip_env" != "true" ]; then
         echo ""
         
         # Test connection and show output for debugging
-        echo "Running: databricks current-user me"
-        # Export for databricks CLI
+        echo "Running: uvx databricks current-user me"
+        # Export for uvx databricks CLI
         export DATABRICKS_HOST="$DATABRICKS_HOST"
         export DATABRICKS_TOKEN="$DATABRICKS_TOKEN"
-        if databricks current-user me >/dev/null 2>&1; then
+        if uvx databricks current-user me >/dev/null 2>&1; then
             echo "✅ Successfully connected to Databricks with PAT"
         else
             echo ""
             echo "❌ PAT authentication failed."
             echo "Please check your host URL and token are correct."
             echo "You can test manually with:"
-            echo "DATABRICKS_HOST='$DATABRICKS_HOST' DATABRICKS_TOKEN='$DATABRICKS_TOKEN' databricks current-user me"
+            echo "DATABRICKS_HOST='$DATABRICKS_HOST' DATABRICKS_TOKEN='$DATABRICKS_TOKEN' uvx databricks current-user me"
             exit 1
         fi
         
@@ -223,8 +274,8 @@ if [ "$skip_env" != "true" ]; then
         
         # List existing profiles
         echo "Available profiles:"
-        if [ -f "$HOME/.databrickscfg" ]; then
-            grep '^\[' "$HOME/.databrickscfg" | sed 's/\[//g' | sed 's/\]//g' | sed 's/^/  - /'
+        if [ -f "$HOME/.uvx databrickscfg" ]; then
+            grep '^\[' "$HOME/.uvx databrickscfg" | sed 's/\[//g' | sed 's/\]//g' | sed 's/^/  - /'
         else
             echo "  No existing profiles found"
         fi
@@ -243,18 +294,18 @@ if [ "$skip_env" != "true" ]; then
         DATABRICKS_AUTH_TYPE="profile"
         
         # Test profile authentication
-        if ! test_databricks_connection "$DATABRICKS_CONFIG_PROFILE"; then
+        if ! test_uvx databricks_connection "$DATABRICKS_CONFIG_PROFILE"; then
             echo ""
             echo "Profile '$DATABRICKS_CONFIG_PROFILE' not found or invalid."
             echo "Would you like to configure it now? (y/N)"
             read -p "> " configure_profile
             
             if [[ "$configure_profile" =~ ^[Yy]$ ]]; then
-                echo "Running 'databricks configure --profile $DATABRICKS_CONFIG_PROFILE'..."
-                databricks configure --profile "$DATABRICKS_CONFIG_PROFILE"
+                echo "Running 'uvx databricks configure --profile $DATABRICKS_CONFIG_PROFILE'..."
+                uvx databricks configure --profile "$DATABRICKS_CONFIG_PROFILE"
                 
                 # Test again after configuration
-                if ! test_databricks_connection "$DATABRICKS_CONFIG_PROFILE"; then
+                if ! test_uvx databricks_connection "$DATABRICKS_CONFIG_PROFILE"; then
                     echo "❌ Profile configuration failed. Please check your settings."
                     exit 1
                 fi
@@ -275,9 +326,12 @@ if [ "$skip_env" != "true" ]; then
         echo "🔍 Getting user information..."
         
         if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
-            DATABRICKS_USER=$(databricks current-user me --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null | grep -o '"userName":"[^"]*"' | cut -d'"' -f4)
+            DATABRICKS_USER=$(uvx databricks current-user me --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null | grep -o '"userName":"[^"]*"' | cut -d'"' -f4)
         else
-            DATABRICKS_USER=$(databricks current-user me --output json 2>/dev/null | grep -o '"userName":"[^"]*"' | cut -d'"' -f4)
+            # For PAT auth, ensure environment variables are exported
+            export DATABRICKS_HOST="$DATABRICKS_HOST"
+            export DATABRICKS_TOKEN="$DATABRICKS_TOKEN"
+            DATABRICKS_USER=$(uvx databricks current-user me --output json 2>/dev/null | grep -o '"userName":"[^"]*"' | cut -d'"' -f4)
         fi
         
         if [ -n "$DATABRICKS_USER" ]; then
@@ -294,9 +348,10 @@ if [ "$skip_env" != "true" ]; then
     echo ""
     echo "🚀 App Configuration"
     echo "--------------------"
-    echo "If you haven't created a Databricks App yet, you can create a custom app from the UI:"
+    echo "If you haven't created a Databricks App yet, don't worry - the deploy script will create it for you!"
+    echo "You can also create a custom app manually from the UI if you prefer:"
     if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
-        WORKSPACE_HOST=$(databricks current-user me --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null | grep -o '"workspaceUrl":"[^"]*"' | cut -d'"' -f4)
+        WORKSPACE_HOST=$(uvx databricks current-user me --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null | grep -o '"workspaceUrl":"[^"]*"' | cut -d'"' -f4)
     else
         WORKSPACE_HOST="$DATABRICKS_HOST"
     fi
@@ -330,45 +385,6 @@ if [ "$skip_env" != "true" ]; then
     echo "✅ Environment configuration saved to .env.local"
 fi
 
-# Check for required tools
-echo ""
-echo "🔧 Checking dependencies..."
-
-# Check for databricks CLI
-if ! command -v databricks &> /dev/null; then
-    echo "❌ Databricks CLI not found. Please install it first:"
-    echo "   Visit: https://docs.databricks.com/dev-tools/cli/install.html"
-    echo "   Or run: pip install databricks-cli"
-    exit 1
-fi
-
-# Check for uv
-if ! command -v uv &> /dev/null; then
-    echo "❌ uv not found. Installing uv..."
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    source $HOME/.local/bin/env
-fi
-
-# Check for bun
-if ! command -v bun &> /dev/null; then
-    echo "❌ bun not found. Installing bun..."
-    curl -fsSL https://bun.sh/install | bash
-    source ~/.bashrc
-fi
-
-echo "✅ All required tools are available"
-
-# Install Claude MCP Playwright (if Claude Code is available)
-echo ""
-echo "🎭 Installing Claude MCP Playwright..."
-if command -v claude &> /dev/null; then
-    claude mcp add playwright npx '@playwright/mcp@latest'
-    echo "✅ Claude MCP Playwright installed"
-else
-    echo "⚠️  Claude Code CLI not found, skipping MCP Playwright installation"
-    echo "💡 You can install it later with: claude mcp add playwright npx '@playwright/mcp@latest'"
-fi
-
 # Install Python dependencies
 echo "📦 Installing Python dependencies..."
 uv sync --dev
@@ -378,6 +394,32 @@ echo "📦 Installing frontend dependencies..."
 cd client
 bun install
 cd ..
+
+# Install Playwright browsers (if Playwright is in dependencies)
+echo ""
+echo "🎭 Installing Playwright browsers..."
+if [ -f "client/package.json" ] && grep -q "@playwright/test" client/package.json; then
+    echo "📋 Found Playwright in client dependencies, installing browsers..."
+    cd client
+    if npx playwright install; then
+        echo "✅ Playwright browsers installed successfully!"
+    else
+        echo "⚠️  Failed to install Playwright browsers. You can install them later with:"
+        echo "   cd client && npx playwright install"
+    fi
+    cd ..
+elif [ -f "package.json" ] && grep -q "@playwright/test" package.json; then
+    echo "📋 Found Playwright in root dependencies, installing browsers..."
+    if npx playwright install; then
+        echo "✅ Playwright browsers installed successfully!"
+    else
+        echo "⚠️  Failed to install Playwright browsers. You can install them later with:"
+        echo "   npx playwright install"
+    fi
+else
+    echo "💡 Playwright not found in dependencies - browsers not installed"
+    echo "   If you add Playwright later, run: npx playwright install"
+fi
 
 echo ""
 echo "🎉 Setup complete!"
@@ -399,12 +441,17 @@ if [ "$AUTO_CLOSE" = true ]; then
     echo ""
     echo "Press Enter to close this terminal..."
     read
-    # Close appropriate terminal app
-    if [ -d "/Applications/iTerm.app" ]; then
-        # For iTerm, close the current window
-        osascript -e 'tell application "iTerm" to close current window'
-    else
-        # For Terminal, close windows containing setup.sh
-        osascript -e 'tell application "Terminal" to close (every window whose name contains "setup.sh")'
+    
+    # Only attempt to close on macOS where osascript is available
+    if command -v osascript >/dev/null 2>&1; then
+        # Close appropriate terminal app
+        if [ -d "/Applications/iTerm.app" ]; then
+            # For iTerm, close the current window
+            osascript -e 'tell application "iTerm" to close current window' 2>/dev/null || true
+        elif [ -d "/Applications/Terminal.app" ]; then
+            # For Terminal, close windows containing setup.sh
+            osascript -e 'tell application "Terminal" to close (every window whose name contains "setup.sh")' 2>/dev/null || true
+        fi
     fi
 fi
+

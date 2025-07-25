@@ -3,8 +3,8 @@
 set -e
 
 # Configuration
-LOG_FILE="/tmp/databricks-app-watch.log"
-PID_FILE="/tmp/databricks-app-watch.pid"
+LOG_FILE="/tmp/uvx databricks-app-watch.log"
+PID_FILE="/tmp/uvx databricks-app-watch.pid"
 
 # Parse command line arguments
 PROD_MODE=false
@@ -40,23 +40,23 @@ fi
 # Check if already authenticated to avoid opening browser every time
 check_auth() {
   if [ ! -z "$DATABRICKS_CONFIG_PROFILE" ]; then
-    databricks auth describe --profile $DATABRICKS_CONFIG_PROFILE > /dev/null 2>&1
+    uvx databricks auth describe --profile $DATABRICKS_CONFIG_PROFILE > /dev/null 2>&1
   elif [ ! -z "$DATABRICKS_HOST" ]; then
-    databricks auth describe --host $DATABRICKS_HOST > /dev/null 2>&1
+    uvx databricks auth describe --host $DATABRICKS_HOST > /dev/null 2>&1
   else
-    databricks auth describe > /dev/null 2>&1
+    uvx databricks auth describe > /dev/null 2>&1
   fi
 }
 
-if command -v databricks >/dev/null 2>&1; then
+if command -v uvx databricks >/dev/null 2>&1; then
   if ! check_auth; then
     echo "🔐 Not authenticated, logging in..."
     if [ ! -z "$DATABRICKS_CONFIG_PROFILE" ]; then
-      databricks auth login --profile $DATABRICKS_CONFIG_PROFILE
+      uvx databricks auth login --profile $DATABRICKS_CONFIG_PROFILE
     elif [ ! -z "$DATABRICKS_HOST" ]; then
-      databricks auth login --host $DATABRICKS_HOST
+      uvx databricks auth login --host $DATABRICKS_HOST
     else
-      databricks auth login
+      uvx databricks auth login
     fi
   else
     echo "✅ Already authenticated"
