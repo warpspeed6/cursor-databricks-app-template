@@ -13,6 +13,21 @@ if [[ "$1" == "--prod" ]]; then
   echo "🚀 Production mode enabled"
 fi
 
+# Kill any existing processes from previous watch.sh runs
+echo "🧹 Cleaning up any existing watch.sh processes..."
+if [ -f "$PID_FILE" ]; then
+  OLD_PID=$(cat "$PID_FILE")
+  if ps -p $OLD_PID > /dev/null 2>&1; then
+    echo "Found old watch.sh process (PID: $OLD_PID), killing it..."
+    kill $OLD_PID 2>/dev/null || true
+    pkill -P $OLD_PID 2>/dev/null || true
+    sleep 2
+  fi
+fi
+
+# Create a new process group so killing this script kills all children
+set -m
+
 # Store this script's PID for cleanup
 echo $$ > "$PID_FILE"
 
@@ -77,6 +92,7 @@ if [ "$PROD_MODE" = true ]; then
   # In production mode, only start backend (frontend served by FastAPI)
   uv run uvicorn server.app:app --reload --reload-dir server --host 0.0.0.0 --port 8000 &
   BACKEND_PID=$!
+  echo "Backend PID: $BACKEND_PID"
   
   echo "Production mode: Frontend will be served by FastAPI at http://localhost:8000"
 else
@@ -84,10 +100,12 @@ else
   echo "🌐 Starting frontend development server..."
   (cd client && BROWSER=none npm run dev) &
   FRONTEND_PID=$!
+  echo "Frontend PID: $FRONTEND_PID"
 
   echo "🖥️ Starting backend development server..."
   uv run uvicorn server.app:app --reload --reload-dir server --host 0.0.0.0 --port 8000 &
   BACKEND_PID=$!
+  echo "Backend PID: $BACKEND_PID"
 fi
 
 # Auto-regenerate client when server code changes
@@ -100,15 +118,26 @@ uv run watchmedo auto-restart \
   --directory=server \
   uv -- run python -m scripts.make_fastapi_client &
 WATCHER_PID=$!
+echo "Watcher PID: $WATCHER_PID"
 
 # Give everything time to start
 sleep 3
 
 echo ""
 echo "✅ Development servers started!"
+echo ""
+echo "📊 Process Information:"
+echo "  Watch script PID: $$"
 if [ "$PROD_MODE" = true ]; then
+  echo "  Backend PID: $BACKEND_PID"
+  echo "  Watcher PID: $WATCHER_PID"
+  echo ""
   echo "App: http://localhost:8000"
 else
+  echo "  Frontend PID: $FRONTEND_PID"
+  echo "  Backend PID: $BACKEND_PID"
+  echo "  Watcher PID: $WATCHER_PID"
+  echo ""
   # Detect the actual frontend port (default 5173, or next available)
   FRONTEND_PORT=$(netstat -an | grep LISTEN | grep ':517[3-9]' | head -1 | sed 's/.*:\([0-9]*\).*/\1/' || echo "5173")
   echo "Frontend: http://localhost:$FRONTEND_PORT"
@@ -121,20 +150,46 @@ echo "🛑 Stop: kill \$(cat $PID_FILE) or pkill -f watch.sh"
 echo ""
 echo "Press Ctrl+C to stop all servers"
 
+# Function to kill a process tree recursively
+kill_tree() {
+  local pid=$1
+  local children=$(ps -o pid --no-headers --ppid $pid 2>/dev/null || true)
+  
+  for child in $children; do
+    kill_tree $child
+  done
+  
+  if ps -p $pid > /dev/null 2>&1; then
+    kill $pid 2>/dev/null || true
+  fi
+}
+
 # Function to cleanup processes
 cleanup() {
   echo ""
   echo "🛑 Stopping servers..."
   
-  # Kill background processes
-  [ ! -z "$BACKEND_PID" ] && kill $BACKEND_PID 2>/dev/null || true
-  [ ! -z "$FRONTEND_PID" ] && kill $FRONTEND_PID 2>/dev/null || true
-  [ ! -z "$WATCHER_PID" ] && kill $WATCHER_PID 2>/dev/null || true
+  # Kill each process tree we started
+  for pid in $FRONTEND_PID $BACKEND_PID $WATCHER_PID; do
+    if [ ! -z "$pid" ] && ps -p "$pid" > /dev/null 2>&1; then
+      echo "Killing process tree PID: $pid"
+      kill_tree "$pid"
+    fi
+  done
   
-  # Kill any remaining processes started by this script
+  # Kill any remaining processes that are direct children of this script
   pkill -P $$ 2>/dev/null || true
   
-  # Remove PID file
+  # Wait a moment for graceful shutdown
+  sleep 1
+  
+  # As a final cleanup, kill any processes still using our ports
+  # (These should only be processes we started since we're in our own watch script)
+  echo "Final cleanup: killing any remaining processes on our ports..."
+  lsof -ti:5173 2>/dev/null | xargs -r kill 2>/dev/null || true
+  lsof -ti:8000 2>/dev/null | xargs -r kill 2>/dev/null || true
+  
+  # Clean up PID file
   rm -f "$PID_FILE"
   
   echo "✅ Cleanup complete"

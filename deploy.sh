@@ -85,7 +85,7 @@ if [ "$DATABRICKS_AUTH_TYPE" = "pat" ]; then
     exit 1
   fi
   
-elif [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+elif [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
   # Profile Authentication
   if [ -z "$DATABRICKS_CONFIG_PROFILE" ]; then
     echo "❌ Profile authentication requires DATABRICKS_CONFIG_PROFILE. Please run ./setup.sh first."
@@ -103,7 +103,7 @@ elif [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
   fi
   
 else
-  echo "❌ Invalid DATABRICKS_AUTH_TYPE: $DATABRICKS_AUTH_TYPE. Must be 'pat' or 'profile'."
+  echo "❌ Invalid DATABRICKS_AUTH_TYPE: $DATABRICKS_AUTH_TYPE. Must be 'pat' or 'databricks-cli'."
   exit 1
 fi
 
@@ -116,7 +116,7 @@ display_app_info() {
   echo "📱 App Name: $DATABRICKS_APP_NAME"
   
   # Get app URL
-  if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+  if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
     APP_URL=$(uvx databricks apps get "$DATABRICKS_APP_NAME" --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null | python3 -c "
 import json, sys
 try:
@@ -149,7 +149,7 @@ if [ "$CREATE_APP" = true ]; then
   echo "🔍 Checking if app '$DATABRICKS_APP_NAME' exists..."
   
   # Check if app exists
-  if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+  if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
     APP_EXISTS=$(uvx databricks apps list --profile "$DATABRICKS_CONFIG_PROFILE" 2>/dev/null | grep -c "^$DATABRICKS_APP_NAME " 2>/dev/null || echo "0")
   else
     APP_EXISTS=$(uvx databricks apps list 2>/dev/null | grep -c "^$DATABRICKS_APP_NAME " 2>/dev/null || echo "0")
@@ -162,7 +162,7 @@ if [ "$CREATE_APP" = true ]; then
     echo "❌ App '$DATABRICKS_APP_NAME' does not exist. Creating it..."
     echo "⏳ This may take several minutes..."
     
-    if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+    if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
       if [ "$VERBOSE" = true ]; then
         uvx databricks apps create "$DATABRICKS_APP_NAME" --profile "$DATABRICKS_CONFIG_PROFILE"
       else
@@ -179,7 +179,7 @@ if [ "$CREATE_APP" = true ]; then
     echo "✅ App '$DATABRICKS_APP_NAME' created successfully"
     
     # Verify creation
-    if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+    if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
       APP_EXISTS=$(uvx databricks apps list --profile "$DATABRICKS_CONFIG_PROFILE" | grep -c "^$DATABRICKS_APP_NAME " || echo "0")
     else
       APP_EXISTS=$(uvx databricks apps list | grep -c "^$DATABRICKS_APP_NAME " || echo "0")
@@ -225,7 +225,7 @@ print_timing "Frontend build completed"
 # Create workspace directory and upload source
 print_timing "Starting workspace setup"
 echo "📂 Creating workspace directory..."
-if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
   uvx databricks workspace mkdirs "$DBA_SOURCE_CODE_PATH" --profile "$DATABRICKS_CONFIG_PROFILE"
 else
   uvx databricks workspace mkdirs "$DBA_SOURCE_CODE_PATH"
@@ -234,7 +234,7 @@ echo "✅ Workspace directory created"
 
 echo "📤 Syncing source code to workspace..."
 # Use uvx databricks sync to properly update all files including requirements.txt
-if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
   uvx databricks sync . "$DBA_SOURCE_CODE_PATH" --profile "$DATABRICKS_CONFIG_PROFILE"
 else
   uvx databricks sync . "$DBA_SOURCE_CODE_PATH"
@@ -246,7 +246,7 @@ print_timing "Workspace setup completed"
 print_timing "Starting Databricks deployment"
 echo "🚀 Deploying to Databricks..."
 
-if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
   if [ "$VERBOSE" = true ]; then
     uvx databricks apps deploy "$DATABRICKS_APP_NAME" --source-code-path "$DBA_SOURCE_CODE_PATH" --debug --profile "$DATABRICKS_CONFIG_PROFILE"
   else
@@ -267,7 +267,7 @@ echo ""
 
 # Get the actual app URL from the apps list
 echo "🔍 Getting app URL..."
-if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
   APP_URL=$(uvx databricks apps list --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null | python3 -c "
 import json, sys
 try:
@@ -307,7 +307,7 @@ if [ -n "$APP_URL" ]; then
   echo "$APP_URL/logz"
 else
   # Fallback to workspace URL if we can't get the app URL
-  if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+  if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
     WORKSPACE_URL=$(uvx databricks workspace current --profile "$DATABRICKS_CONFIG_PROFILE" 2>/dev/null | grep -o 'https://[^/]*' || echo "https://<your-uvx databricks-workspace>")
   else
     WORKSPACE_URL="$DATABRICKS_HOST"
@@ -320,7 +320,7 @@ else
 fi
 
 echo ""
-if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
   echo "To check the status:"
   echo "uvx databricks apps list --profile $DATABRICKS_CONFIG_PROFILE"
 else

@@ -51,6 +51,33 @@ nohup ./watch.sh --prod > /tmp/databricks-app-watch.log 2>&1 &
 - Handles authentication setup
 - Provides proper logging and error handling
 
+### 🛑 HOW TO KILL THE DEVELOPMENT SERVERS
+
+**To kill the development servers, use ONE of these methods:**
+
+```bash
+# Method 1: Using the PID file (preferred)
+kill $(cat /tmp/databricks-app-watch.pid)
+
+# Method 2: Kill by process name
+pkill -f watch.sh
+
+# Method 3: If you know the watch script PID directly
+kill [PID]
+```
+
+**How it works (Updated Cleanup System):**
+- **Recursive Process Tree Killing**: The cleanup function kills each tracked process (frontend, backend, watcher) and ALL their descendant processes recursively
+- **Final Port Cleanup**: After process tree cleanup, any remaining processes on ports 5173 and 8000 are force-killed as a final safety measure
+- **Complete Port Liberation**: Both ports 5173 (frontend) and 8000 (backend) are guaranteed to be freed
+- **Handles Complex Process Chains**: Works with npm → bun → node process hierarchies that can't be killed with simple parent-child relationships
+
+**Technical Details:**
+- Uses `kill_tree()` function that recursively finds and kills all child processes
+- Tracks specific PIDs: Frontend (shell wrapper), Backend (uvicorn), Watcher (watchmedo)  
+- Final cleanup: `lsof -ti:5173 | xargs kill` and `lsof -ti:8000 | xargs kill`
+- **Test Result**: Killing the watch script completely frees both ports with zero orphaned processes
+
 ### 🚨 PYTHON EXECUTION RULE 🚨
 
 **NEVER run `python` directly - ALWAYS use `uv run`:**

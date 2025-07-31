@@ -183,7 +183,7 @@ if [ "$skip_env" != "true" ]; then
     # Pre-select based on existing configuration
     if [ "$DATABRICKS_AUTH_TYPE" = "pat" ]; then
         default_choice="1"
-    elif [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+    elif [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
         default_choice="2"
     else
         default_choice=""
@@ -270,14 +270,16 @@ if [ "$skip_env" != "true" ]; then
         echo "-------------------------------"
         
         # Update auth type in .env.local
-        update_env_value "DATABRICKS_AUTH_TYPE" "profile" "Databricks Authentication Type"
+        update_env_value "DATABRICKS_AUTH_TYPE" "databricks-cli" "Databricks Authentication Type"
         
         # List existing profiles
-        echo "Available profiles:"
-        if [ -f "$HOME/.uvx databrickscfg" ]; then
-            grep '^\[' "$HOME/.uvx databrickscfg" | sed 's/\[//g' | sed 's/\]//g' | sed 's/^/  - /'
+        printf "Loading profiles... "
+        PROFILES_OUTPUT=$(uvx databricks auth profiles 2>/dev/null)
+        printf "✓\n"
+        if [ $? -eq 0 ] && [ -n "$PROFILES_OUTPUT" ]; then
+            echo "$PROFILES_OUTPUT"
         else
-            echo "  No existing profiles found"
+            echo "No existing profiles found"
         fi
         echo ""
         
@@ -291,23 +293,25 @@ if [ "$skip_env" != "true" ]; then
         update_env_value "DATABRICKS_TOKEN" ""
         DATABRICKS_HOST=""
         DATABRICKS_TOKEN=""
-        DATABRICKS_AUTH_TYPE="profile"
+        DATABRICKS_AUTH_TYPE="databricks-cli"
         
         # Test profile authentication
-        if ! test_uvx databricks_connection "$DATABRICKS_CONFIG_PROFILE"; then
+        if ! test_databricks_connection "$DATABRICKS_CONFIG_PROFILE"; then
             echo ""
             echo "Profile '$DATABRICKS_CONFIG_PROFILE' not found or invalid."
-            echo "Would you like to configure it now? (y/N)"
-            read -p "> " configure_profile
+            echo "Would you like to login to this profile now? (y/N)"
+            read -p "> " login_profile
             
-            if [[ "$configure_profile" =~ ^[Yy]$ ]]; then
-                echo "Running 'uvx databricks configure --profile $DATABRICKS_CONFIG_PROFILE'..."
-                uvx databricks configure --profile "$DATABRICKS_CONFIG_PROFILE"
+            if [[ "$login_profile" =~ ^[Yy]$ ]]; then
+                echo "Running 'uvx databricks auth login --profile $DATABRICKS_CONFIG_PROFILE'..."
+                uvx databricks auth login --profile "$DATABRICKS_CONFIG_PROFILE"
                 
-                # Test again after configuration
-                if ! test_uvx databricks_connection "$DATABRICKS_CONFIG_PROFILE"; then
-                    echo "❌ Profile configuration failed. Please check your settings."
+                # Test again after login
+                if ! test_databricks_connection "$DATABRICKS_CONFIG_PROFILE"; then
+                    echo "❌ Profile login failed or connection test failed. Please check your settings."
                     exit 1
+                else
+                    echo "✅ Successfully logged in to profile '$DATABRICKS_CONFIG_PROFILE'"
                 fi
             else
                 echo "❌ Valid Databricks authentication is required for deployment."
@@ -325,7 +329,7 @@ if [ "$skip_env" != "true" ]; then
         echo ""
         echo "🔍 Getting user information..."
         
-        if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+        if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
             DATABRICKS_USER=$(uvx databricks current-user me --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null | grep -o '"userName":"[^"]*"' | cut -d'"' -f4)
         else
             # For PAT auth, ensure environment variables are exported
@@ -350,9 +354,11 @@ if [ "$skip_env" != "true" ]; then
     echo "--------------------"
     echo "If you haven't created a Databricks App yet, don't worry - the deploy script will create it for you!"
     echo "You can also create a custom app manually from the UI if you prefer:"
-    if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
-        WORKSPACE_HOST=$(uvx databricks current-user me --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null | grep -o '"workspaceUrl":"[^"]*"' | cut -d'"' -f4)
-    else
+    
+    # Get workspace URL based on auth type
+    if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ] && [ -n "$DATABRICKS_CONFIG_PROFILE" ]; then
+        WORKSPACE_HOST=$(uvx databricks auth profiles 2>/dev/null | grep "^$DATABRICKS_CONFIG_PROFILE " | awk '{print $2}')
+    elif [ "$DATABRICKS_AUTH_TYPE" = "pat" ] && [ -n "$DATABRICKS_HOST" ]; then
         WORKSPACE_HOST="$DATABRICKS_HOST"
     fi
     
