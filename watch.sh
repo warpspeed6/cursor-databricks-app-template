@@ -3,8 +3,8 @@
 set -e
 
 # Configuration
-LOG_FILE="/tmp/uvx databricks-app-watch.log"
-PID_FILE="/tmp/uvx databricks-app-watch.pid"
+LOG_FILE="/tmp/databricks-app-watch.log"
+PID_FILE="/tmp/databricks-app-watch.pid"
 
 # Parse command line arguments
 PROD_MODE=false

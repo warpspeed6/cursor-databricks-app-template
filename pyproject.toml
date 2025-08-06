@@ -11,7 +11,6 @@ dependencies = [
     "databricks-sdk==0.59.0",
     "pydantic>=2.5.0",
     "python-multipart>=0.0.6",
-    "python-dotenv>=1.0.0",
     "httpx>=0.25.0",
     "pandas>=2.1.0",
     "requests>=2.32.4",
@@ -20,6 +19,7 @@ dependencies = [
     "databricks-connect>=16.1.6", # Latest version compatible with Python 3.11
     "mlflow[databricks]>=3.1.1",
     "debugpy>=1.8.15",
+    "python-dotenv>=1.1.1",
 ]
 requires-python = ">=3.11"
 
@@ -117,4 +117,5 @@ convention = "google"
 [dependency-groups]
 dev = [
     "tomli>=2.2.1",
+    "websockets>=15.0.1",
 ]
