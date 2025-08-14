@@ -96,23 +96,22 @@ python scripts/make_fastapi_client.py
 
 ### 🚨 DATABRICKS CLI EXECUTION RULE 🚨
 
-**The Databricks CLI is run via uvx (uv's tool runner):**
+**The Databricks CLI is installed globally and run directly:**
 
 ```bash
-# ✅ CORRECT - Use uvx to run databricks CLI
-uvx databricks current-user me
-uvx databricks apps list
-uvx databricks workspace list /
+# ✅ CORRECT - Use databricks CLI directly
+databricks current-user me
+databricks apps list
+databricks workspace list /
 
 # With environment variables when needed:
-source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && uvx databricks current-user me
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks current-user me
 ```
 
-**Why uvx is used:**
-- No global installation needed - uvx runs it from PyPI
-- Always uses the latest version
-- Isolated from project dependencies
-- Works across all environments
+**Installation:**
+- The CLI is installed globally during setup via ./setup.sh
+- Uses official installation methods (brew on macOS, official installer on Linux)
+- Always available in the PATH after installation
 
 ### Claude Natural Language Commands
 Claude understands natural language commands for common development tasks:

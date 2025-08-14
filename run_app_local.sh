@@ -60,7 +60,7 @@ if [ "$DATABRICKS_AUTH_TYPE" = "pat" ]; then
   export DATABRICKS_TOKEN="$DATABRICKS_TOKEN"
   
   # Test connection
-  if ! uvx databricks current-user me >/dev/null 2>&1; then
+  if ! databricks current-user me >/dev/null 2>&1; then
     echo "❌ PAT authentication failed. Please check your credentials."
     exit 1
   fi
@@ -75,7 +75,7 @@ elif [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
   echo "Using profile authentication: $DATABRICKS_CONFIG_PROFILE"
   
   # Test connection
-  if ! uvx databricks current-user me --profile "$DATABRICKS_CONFIG_PROFILE" >/dev/null 2>&1; then
+  if ! databricks current-user me --profile "$DATABRICKS_CONFIG_PROFILE" >/dev/null 2>&1; then
     echo "❌ Profile authentication failed. Please check your profile configuration."
     exit 1
   fi
@@ -97,8 +97,8 @@ echo ""
 
 # Check if run-local command is available
 print_timing "Checking CLI version"
-if ! uvx databricks apps run-local --help >/dev/null 2>&1; then
-  echo "❌ The 'uvx databricks apps run-local' command is not available in your CLI version."
+if ! databricks apps run-local --help >/dev/null 2>&1; then
+  echo "❌ The 'databricks apps run-local' command is not available in your CLI version."
   echo "💡 You may need to update your Databricks CLI to use this feature."
   echo ""
   echo "To update the Databricks CLI:"
@@ -114,7 +114,7 @@ if ! uvx databricks apps run-local --help >/dev/null 2>&1; then
   echo "📚 See official installation docs: https://docs.databricks.com/aws/en/dev-tools/cli/install"
   echo ""
   echo "Current CLI version:"
-  uvx databricks --version
+  databricks --version
   echo ""
   echo "Alternative debugging approaches:"
   echo "   1. Use ./app_status.sh --verbose to check deployment status"
@@ -132,17 +132,17 @@ echo ""
 
 if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
   if [ "$VERBOSE" = true ]; then
-    echo "Running: uvx databricks apps run-local --prepare-environment --debug --profile $DATABRICKS_CONFIG_PROFILE"
-    uvx databricks apps run-local --prepare-environment --debug --profile "$DATABRICKS_CONFIG_PROFILE"
+    echo "Running: databricks apps run-local --prepare-environment --debug --profile $DATABRICKS_CONFIG_PROFILE"
+    databricks apps run-local --prepare-environment --debug --profile "$DATABRICKS_CONFIG_PROFILE"
   else
-    uvx databricks apps run-local --prepare-environment --debug --profile "$DATABRICKS_CONFIG_PROFILE"
+    databricks apps run-local --prepare-environment --debug --profile "$DATABRICKS_CONFIG_PROFILE"
   fi
 else
   if [ "$VERBOSE" = true ]; then
-    echo "Running: uvx databricks apps run-local --prepare-environment --debug"
-    uvx databricks apps run-local --prepare-environment --debug
+    echo "Running: databricks apps run-local --prepare-environment --debug"
+    databricks apps run-local --prepare-environment --debug
   else
-    uvx databricks apps run-local --prepare-environment --debug
+    databricks apps run-local --prepare-environment --debug
   fi
 fi
 

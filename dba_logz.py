@@ -29,7 +29,7 @@ class LogzWebSocketClient:
       profile = os.getenv('DATABRICKS_CONFIG_PROFILE')
       host = os.getenv('DATABRICKS_HOST')
 
-      cmd = ['uvx', 'databricks', 'auth', 'token']
+      cmd = ['databricks', 'auth', 'token']
 
       if profile:
         cmd.extend(['--profile', profile])
@@ -52,7 +52,7 @@ class LogzWebSocketClient:
     except subprocess.CalledProcessError as e:
       raise Exception(f'Failed to get OAuth token: {e}')
     except FileNotFoundError:
-      raise Exception('uvx/databricks CLI not found. Please install databricks CLI.')
+      raise Exception('databricks CLI not found. Please install databricks CLI.')
 
   def _get_headers(self) -> dict:
     """Get WebSocket headers with authentication."""

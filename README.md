@@ -291,7 +291,7 @@ DBA_SOURCE_CODE_PATH=/Workspace/Users/you@company.com/your-app-name
 #### 2. CLI Profile - Recommended for Production
 - **Pros**: More secure, supports OAuth
 - **Cons**: Requires CLI configuration
-- **Setup**: Run `uvx databricks auth login --host <workspace-url> --profile <profile-name>`
+- **Setup**: Run `databricks auth login --host <workspace-url> --profile <profile-name>`
 
 ### Validation
 The setup script automatically validates your configuration and tests connectivity.
@@ -347,7 +347,7 @@ The deployment script automatically:
 - **Import errors**: Run `./run_app_local.sh` to test locally first
 - **Missing files**: Check with `./app_status.sh --verbose`
 - **Authentication**: Verify `.env.local` configuration
-- **CLI outdated**: Since we use `uvx databricks`, the CLI is always up-to-date
+- **CLI outdated**: Since we use `databricks`, the CLI is always up-to-date
 
 ## 📝 Customization
 
@@ -409,7 +409,7 @@ cp client/src/lib/utils.ts src/lib/utils.ts
 #### Authentication Issues
 ```bash
 # Test authentication (works for both PAT and profile)
-source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && uvx databricks current-user me
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks current-user me
 
 # Reconfigure if needed
 ./setup.sh
@@ -426,7 +426,7 @@ source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && uvx da
 ./app_status.sh --verbose
 
 # Check workspace files
-source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && uvx databricks workspace list "$DBA_SOURCE_CODE_PATH"
+source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks workspace list "$DBA_SOURCE_CODE_PATH"
 ```
 
 #### Local Testing Before Deployment

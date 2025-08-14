@@ -38,18 +38,18 @@ It looks like you're not in a Databricks app project. To get started:
 
 ## 🚨 CRITICAL: Databricks CLI Execution Rule 🚨
 
-**VERY IMPORTANT: NEVER run `databricks` CLI directly - ALWAYS prefix with environment setup:**
+**VERY IMPORTANT: For environment-specific authentication, prefix with environment setup:**
 
 ```bash
-# ✅ CORRECT - Always source .env.local first
+# ✅ CORRECT - Use environment setup when needed
 source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks current-user me
 source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks apps list
 source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databricks workspace list /
 
-# ❌ WRONG - Never use databricks CLI directly
-databricks current-user me
-databricks apps list
-databricks workspace list /
+# ✅ ALSO CORRECT - Use databricks CLI directly with profiles
+databricks current-user me --profile myprofile
+databricks apps list --profile myprofile
+databricks workspace list / --profile myprofile
 ```
 
 **Why this is required:**

@@ -73,6 +73,12 @@ if ! source "$SETUP_DIR/setup_utils/check_node.sh" && check_node; then
 fi
 
 echo ""
+echo "🔧 Checking Databricks CLI..."
+if ! source "$SETUP_DIR/setup_utils/check_databricks.sh" && check_databricks; then
+    exit 1
+fi
+
+echo ""
 echo "🎉 All required system dependencies are installed!"
 echo ""
 
@@ -116,19 +122,19 @@ update_env_value() {
     fi
 }
 
-# Function to test uvx databricks connection
+# Function to test databricks connection
 test_databricks_connection() {
     local profile="$1"
     echo "🔍 Testing Databricks connection..."
     
-    # Ensure environment variables are exported for uvx databricks CLI
+    # Ensure environment variables are exported for databricks CLI
     if [ -n "$DATABRICKS_HOST" ] && [ -n "$DATABRICKS_TOKEN" ]; then
         export DATABRICKS_HOST
         export DATABRICKS_TOKEN
     fi
     
     if [ -n "$profile" ]; then
-        if uvx databricks current-user me --profile "$profile" >/dev/null 2>&1; then
+        if databricks current-user me --profile "$profile" >/dev/null 2>&1; then
             echo "✅ Successfully connected to Databricks with profile '$profile'"
             return 0
         else
@@ -136,7 +142,7 @@ test_databricks_connection() {
             return 1
         fi
     else
-        if uvx databricks current-user me >/dev/null 2>&1; then
+        if databricks current-user me >/dev/null 2>&1; then
             echo "✅ Successfully connected to Databricks"
             return 0
         else
@@ -205,7 +211,7 @@ if [ "$skip_env" != "true" ]; then
         update_env_value "DATABRICKS_AUTH_TYPE" "pat" "Databricks Authentication Type"
         
         if [ -z "$DATABRICKS_HOST" ]; then
-            prompt_with_default "Databricks Host" "https://your-workspace.cloud.uvx databricks.com" "DATABRICKS_HOST"
+            prompt_with_default "Databricks Host" "https://your-workspace.cloud.databricks.com" "DATABRICKS_HOST"
         else
             prompt_with_default "Databricks Host" "$DATABRICKS_HOST" "DATABRICKS_HOST"
         fi
@@ -248,18 +254,18 @@ if [ "$skip_env" != "true" ]; then
         echo ""
         
         # Test connection and show output for debugging
-        echo "Running: uvx databricks current-user me"
-        # Export for uvx databricks CLI
+        echo "Running: databricks current-user me"
+        # Export for databricks CLI
         export DATABRICKS_HOST="$DATABRICKS_HOST"
         export DATABRICKS_TOKEN="$DATABRICKS_TOKEN"
-        if uvx databricks current-user me >/dev/null 2>&1; then
+        if databricks current-user me >/dev/null 2>&1; then
             echo "✅ Successfully connected to Databricks with PAT"
         else
             echo ""
             echo "❌ PAT authentication failed."
             echo "Please check your host URL and token are correct."
             echo "You can test manually with:"
-            echo "DATABRICKS_HOST='$DATABRICKS_HOST' DATABRICKS_TOKEN='$DATABRICKS_TOKEN' uvx databricks current-user me"
+            echo "DATABRICKS_HOST='$DATABRICKS_HOST' DATABRICKS_TOKEN='$DATABRICKS_TOKEN' databricks current-user me"
             exit 1
         fi
         
@@ -274,7 +280,7 @@ if [ "$skip_env" != "true" ]; then
         
         # List existing profiles
         printf "Loading profiles... "
-        PROFILES_OUTPUT=$(uvx databricks auth profiles 2>/dev/null)
+        PROFILES_OUTPUT=$(databricks auth profiles 2>/dev/null)
         printf "✓\n"
         if [ $? -eq 0 ] && [ -n "$PROFILES_OUTPUT" ]; then
             echo "$PROFILES_OUTPUT"
@@ -303,8 +309,8 @@ if [ "$skip_env" != "true" ]; then
             read -p "> " login_profile
             
             if [[ "$login_profile" =~ ^[Yy]$ ]]; then
-                echo "Running 'uvx databricks auth login --profile $DATABRICKS_CONFIG_PROFILE'..."
-                uvx databricks auth login --profile "$DATABRICKS_CONFIG_PROFILE"
+                echo "Running 'databricks auth login --profile $DATABRICKS_CONFIG_PROFILE'..."
+                databricks auth login --profile "$DATABRICKS_CONFIG_PROFILE"
                 
                 # Test again after login
                 if ! test_databricks_connection "$DATABRICKS_CONFIG_PROFILE"; then
@@ -330,12 +336,12 @@ if [ "$skip_env" != "true" ]; then
         echo "🔍 Getting user information..."
         
         if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
-            DATABRICKS_USER=$(uvx databricks current-user me --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null | grep -o '"userName":"[^"]*"' | cut -d'"' -f4)
+            DATABRICKS_USER=$(databricks current-user me --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null | grep -o '"userName":"[^"]*"' | cut -d'"' -f4)
         else
             # For PAT auth, ensure environment variables are exported
             export DATABRICKS_HOST="$DATABRICKS_HOST"
             export DATABRICKS_TOKEN="$DATABRICKS_TOKEN"
-            DATABRICKS_USER=$(uvx databricks current-user me --output json 2>/dev/null | grep -o '"userName":"[^"]*"' | cut -d'"' -f4)
+            DATABRICKS_USER=$(databricks current-user me --output json 2>/dev/null | grep -o '"userName":"[^"]*"' | cut -d'"' -f4)
         fi
         
         if [ -n "$DATABRICKS_USER" ]; then
@@ -357,7 +363,7 @@ if [ "$skip_env" != "true" ]; then
     
     # Get workspace URL based on auth type
     if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ] && [ -n "$DATABRICKS_CONFIG_PROFILE" ]; then
-        WORKSPACE_HOST=$(uvx databricks auth profiles 2>/dev/null | grep "^$DATABRICKS_CONFIG_PROFILE " | awk '{print $2}')
+        WORKSPACE_HOST=$(databricks auth profiles 2>/dev/null | grep "^$DATABRICKS_CONFIG_PROFILE " | awk '{print $2}')
     elif [ "$DATABRICKS_AUTH_TYPE" = "pat" ] && [ -n "$DATABRICKS_HOST" ]; then
         WORKSPACE_HOST="$DATABRICKS_HOST"
     fi
@@ -397,9 +403,59 @@ uv sync --dev
 
 # Install frontend dependencies
 echo "📦 Installing frontend dependencies..."
-cd client
-bun install
-cd ..
+if command -v bun >/dev/null 2>&1; then
+    cd client
+    bun install
+    cd ..
+    echo "✅ Frontend dependencies installed successfully!"
+else
+    echo ""
+    echo "❌ Bun is not installed, but it's required to install frontend dependencies."
+    echo "📋 Frontend dependencies are essential for this project to work properly."
+    echo ""
+    read -p "🤔 Would you like me to install Bun for you now? (y/N): " install_bun
+    
+    if [[ "$install_bun" =~ ^[Yy]$ ]]; then
+        echo "🚀 Installing Bun..."
+        if [[ "$OS" == "macOS" ]]; then
+            if command -v brew >/dev/null 2>&1; then
+                brew tap oven-sh/bun && brew install bun
+            else
+                curl -fsSL https://bun.sh/install | bash
+            fi
+        else
+            curl -fsSL https://bun.sh/install | bash
+        fi
+        
+        # Source shell configuration to update PATH
+        if [ -f "$HOME/.bashrc" ]; then
+            source "$HOME/.bashrc"
+        fi
+        if [ -f "$HOME/.zshrc" ]; then
+            source "$HOME/.zshrc"
+        fi
+        export PATH="$HOME/.bun/bin:$PATH"
+        
+        # Verify installation and install dependencies
+        if command -v bun >/dev/null 2>&1; then
+            echo "✅ Bun installed successfully!"
+            cd client
+            bun install
+            cd ..
+            echo "✅ Frontend dependencies installed successfully!"
+        else
+            echo "❌ Failed to install Bun. Please install it manually and re-run this script."
+            echo "Visit: https://bun.sh/docs/installation"
+            exit 1
+        fi
+    else
+        echo "❌ Cannot proceed without Bun. Frontend dependencies are required."
+        echo "💡 Install Bun manually and re-run this setup script:"
+        echo "   curl -fsSL https://bun.sh/install | bash"
+        echo "   ./setup.sh"
+        exit 1
+    fi
+fi
 
 # Install Playwright browsers (if Playwright is in dependencies)
 echo ""
