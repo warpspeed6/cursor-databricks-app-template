@@ -113,6 +113,26 @@ source .env.local && export DATABRICKS_HOST && export DATABRICKS_TOKEN && databr
 - Uses official installation methods (brew on macOS, official installer on Linux)
 - Always available in the PATH after installation
 
+**🚨 DATABRICKS APPS COMPATIBILITY 🚨**
+
+If the user runs into issues with the Databricks CLI not recognizing `apps` commands (e.g., "Error: unknown command 'apps'"), they need to upgrade to CLI version 0.265.0+:
+
+```bash
+# Check current version
+databricks --version
+
+# If version is < 0.265.0, offer to upgrade
+# ONLY upgrade if user explicitly confirms - very important!
+brew upgrade databricks
+```
+
+**When to upgrade:**
+- User gets "unknown command 'apps'" errors
+- CLI version shows < 0.265.0
+- User explicitly requests CLI upgrade
+
+**IMPORTANT**: Always ask for user confirmation before upgrading, as this affects their global CLI installation.
+
 ### Claude Natural Language Commands
 Claude understands natural language commands for common development tasks:
 
