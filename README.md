@@ -267,7 +267,7 @@ The setup script creates `.env.local` with your configuration:
 
 ```bash
 # Authentication Type
-DATABRICKS_AUTH_TYPE=pat  # or "profile"
+DATABRICKS_AUTH_TYPE=pat  # or "databricks-cli"
 
 # For PAT Authentication
 DATABRICKS_HOST=https://your-workspace.cloud.databricks.com

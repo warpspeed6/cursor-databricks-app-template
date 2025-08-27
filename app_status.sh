@@ -54,7 +54,7 @@ if [ "$DATABRICKS_AUTH_TYPE" = "pat" ]; then
     exit 1
   fi
   
-elif [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+elif [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
   # Profile Authentication
   if [ -z "$DATABRICKS_CONFIG_PROFILE" ]; then
     echo "❌ Profile authentication requires DATABRICKS_CONFIG_PROFILE. Please run ./setup.sh first."
@@ -68,7 +68,7 @@ elif [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
   fi
   
 else
-  echo "❌ Invalid DATABRICKS_AUTH_TYPE: $DATABRICKS_AUTH_TYPE. Must be 'pat' or 'profile'."
+  echo "❌ Invalid DATABRICKS_AUTH_TYPE: $DATABRICKS_AUTH_TYPE. Must be 'pat' or 'databricks-cli'."
   exit 1
 fi
 
@@ -175,7 +175,7 @@ except Exception as e:
 echo "🔍 Getting app status for '$DATABRICKS_APP_NAME'..."
 echo ""
 
-if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
   APP_JSON=$(databricks apps get "$DATABRICKS_APP_NAME" --profile "$DATABRICKS_CONFIG_PROFILE" --output json 2>/dev/null)
 else
   APP_JSON=$(databricks apps get "$DATABRICKS_APP_NAME" --output json 2>/dev/null)
@@ -199,7 +199,7 @@ if [ "$VERBOSE" = true ]; then
   echo "📂 Workspace Files ($DBA_SOURCE_CODE_PATH):"
   echo ""
   
-  if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+  if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
     WORKSPACE_LIST=$(databricks workspace list "$DBA_SOURCE_CODE_PATH" --profile "$DATABRICKS_CONFIG_PROFILE" 2>/dev/null)
   else
     WORKSPACE_LIST=$(databricks workspace list "$DBA_SOURCE_CODE_PATH" 2>/dev/null)
@@ -216,7 +216,7 @@ fi
 
 # Show helpful commands
 echo "💡 Useful commands:"
-if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
   echo "   List all apps: databricks apps list --profile $DATABRICKS_CONFIG_PROFILE"
   echo "   View logs: Visit ${DATABRICKS_APP_NAME} URL + /logz in browser"
 else

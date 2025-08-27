@@ -65,7 +65,7 @@ if [ "$DATABRICKS_AUTH_TYPE" = "pat" ]; then
     exit 1
   fi
   
-elif [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+elif [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
   # Profile Authentication
   if [ -z "$DATABRICKS_CONFIG_PROFILE" ]; then
     echo "❌ Profile authentication requires DATABRICKS_CONFIG_PROFILE. Please run ./setup.sh first."
@@ -81,7 +81,7 @@ elif [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
   fi
   
 else
-  echo "❌ Invalid DATABRICKS_AUTH_TYPE: $DATABRICKS_AUTH_TYPE. Must be 'pat' or 'profile'."
+  echo "❌ Invalid DATABRICKS_AUTH_TYPE: $DATABRICKS_AUTH_TYPE. Must be 'pat' or 'databricks-cli'."
   exit 1
 fi
 
@@ -130,7 +130,7 @@ echo "🚀 Running app locally with debug mode..."
 echo "💡 This will help identify deployment issues by running the app locally"
 echo ""
 
-if [ "$DATABRICKS_AUTH_TYPE" = "profile" ]; then
+if [ "$DATABRICKS_AUTH_TYPE" = "databricks-cli" ]; then
   if [ "$VERBOSE" = true ]; then
     echo "Running: databricks apps run-local --prepare-environment --debug --profile $DATABRICKS_CONFIG_PROFILE"
     databricks apps run-local --prepare-environment --debug --profile "$DATABRICKS_CONFIG_PROFILE"
