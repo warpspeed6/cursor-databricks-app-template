@@ -20,14 +20,58 @@ load_dotenv('.env.local')
 class DatabricksAppClient:
   """Client for making authenticated requests to Databricks Apps."""
 
-  def __init__(self, app_url: str):
+  def __init__(self, app_url: Optional[str] = None):
     """Initialize client with app URL.
 
     Args:
-        app_url: Base URL of the Databricks app
+        app_url: Base URL of the Databricks app. If not provided, will be auto-detected from DATABRICKS_APP_NAME
     """
-    self.app_url = app_url.rstrip('/')
+    if app_url:
+      self.app_url = app_url.rstrip('/')
+    else:
+      self.app_url = self._get_app_url()
     self._token_cache: Optional[str] = None
+
+  def _get_app_url(self) -> str:
+    """Auto-detect app URL from DATABRICKS_APP_NAME environment variable."""
+    app_name = os.getenv('DATABRICKS_APP_NAME')
+    if not app_name:
+      raise Exception(
+        'DATABRICKS_APP_NAME environment variable is not set. Please run ./setup.sh or provide app_url explicitly.'
+      )
+    
+    try:
+      profile = os.getenv('DATABRICKS_CONFIG_PROFILE')
+      host = os.getenv('DATABRICKS_HOST')
+      
+      cmd = ['databricks', 'apps', 'get', app_name, '--output', 'json']
+      
+      if profile:
+        cmd.extend(['--profile', profile])
+      elif host:
+        # For PAT auth, databricks CLI uses env vars automatically
+        pass
+      else:
+        raise Exception(
+          'Neither DATABRICKS_CONFIG_PROFILE nor DATABRICKS_HOST environment variable is set'
+        )
+      
+      result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+      app_data = json.loads(result.stdout)
+      app_url = app_data.get('url')
+      
+      if not app_url:
+        raise Exception(f'Could not get URL for app {app_name}')
+      
+      print(f'✅ Auto-detected app URL: {app_url}')
+      return app_url
+      
+    except subprocess.CalledProcessError as e:
+      raise Exception(f'Failed to get app URL for {app_name}: {e}')
+    except json.JSONDecodeError:
+      raise Exception(f'Failed to parse app data for {app_name}')
+    except FileNotFoundError:
+      raise Exception('databricks CLI not found. Please install databricks CLI.')
 
   def _get_oauth_token(self) -> str:
     """Get OAuth token using Databricks CLI."""
@@ -193,14 +237,20 @@ def main():
     formatter_class=argparse.RawDescriptionHelpFormatter,
     epilog="""
 Examples:
-  python dba_client.py https://my-app.aws.databricksapps.com /api/config/
-  python dba_client.py https://my-app.aws.databricksapps.com /api/user/me
-  python dba_client.py https://my-app.aws.databricksapps.com /api/data POST '{"key":"value"}'
+  # Auto-detect app URL from DATABRICKS_APP_NAME
+  python dba_client.py /api/config/
+  python dba_client.py /api/user/me
+  python dba_client.py /api/data POST '{"key":"value"}'
+  
+  # Or specify app URL explicitly  
+  python dba_client.py /api/config/ --app_url https://my-app.aws.databricksapps.com
+  python dba_client.py /api/user/me --app_url https://my-app.aws.databricksapps.com
+  python dba_client.py /api/data POST '{"key":"value"}' --app_url https://my-app.aws.databricksapps.com
         """,
   )
 
-  parser.add_argument('app_url', help='Base URL of the Databricks app')
   parser.add_argument('endpoint', help='API endpoint to call')
+  parser.add_argument('--app_url', help='Base URL of the Databricks app (optional, auto-detected from DATABRICKS_APP_NAME if not provided)')
   parser.add_argument(
     'method', nargs='?', default='GET', help='HTTP method (GET, POST, PUT, DELETE)'
   )

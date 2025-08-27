@@ -1,176 +1,170 @@
 #!/usr/bin/env python3
-"""Simple SSE client for Databricks App logs."""
+"""Databricks App logs client using /logz/batch endpoint."""
 
 import json
 import os
-import subprocess
+import sys
 import time
-from typing import Optional
+from datetime import datetime
+from typing import Optional, List, Dict, Any
 
-import requests
 from dotenv import load_dotenv
 
 # Load environment variables from .env.local
 load_dotenv('.env.local')
 
+# Import our DatabricksAppClient
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from dba_client import DatabricksAppClient
+
 
 class LogzClient:
-  """Client for streaming logs from Databricks App /logz/stream endpoint."""
+  """Client for fetching logs from Databricks App /logz/batch endpoint."""
 
-  def __init__(self, app_url: str):
-    self.app_url = app_url.rstrip('/')
-    self.sse_url = self.app_url + '/logz/stream'
-    self._token_cache = None
+  def __init__(self, app_url: Optional[str] = None):
+    """Initialize with optional app URL.
+    
+    Args:
+        app_url: Base URL of the Databricks app. If not provided, will be auto-detected from DATABRICKS_APP_NAME
+    """
+    # Use DatabricksAppClient for all API calls
+    self.client = DatabricksAppClient(app_url)
+    self.app_url = self.client.app_url
+    self.batch_url = self.app_url + '/logz/batch'
 
-  def _get_oauth_token(self) -> str:
-    """Get OAuth token using Databricks CLI."""
+  def fetch_logs(self, search_query: str = '', watch: bool = False, interval: int = 5) -> List[Dict[str, Any]]:
+    """Fetch logs from the /logz/batch endpoint.
+    
+    Args:
+        search_query: Optional search query to filter logs
+        watch: If True, continuously fetch new logs
+        interval: Interval between fetches when watching (seconds)
+    
+    Returns:
+        List of log entries
+    """
     try:
-      profile = os.getenv('DATABRICKS_CONFIG_PROFILE')
-      host = os.getenv('DATABRICKS_HOST')
-
-      cmd = ['databricks', 'auth', 'token']
-
-      if profile:
-        cmd.extend(['--profile', profile])
-      elif host:
-        cmd.extend(['--host', host])
-      else:
-        raise Exception(
-          'Neither DATABRICKS_CONFIG_PROFILE nor DATABRICKS_HOST environment variable is set'
-        )
-
-      result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-      token_output = result.stdout.strip()
+      # Use the DatabricksAppClient to make the request
+      logs = self.client.get('/logz/batch')
       
-      try:
-        token_data = json.loads(token_output)
-        return token_data.get('access_token', token_output)
-      except json.JSONDecodeError:
-        return token_output
+      # Filter logs if search query provided
+      if search_query and isinstance(logs, list):
+        logs = [log for log in logs if search_query.lower() in log.get('message', '').lower()]
+      
+      return logs if isinstance(logs, list) else []
+      
+    except Exception as e:
+      print(f'❌ Error fetching logs: {e}')
+      return []
 
-    except subprocess.CalledProcessError as e:
-      raise Exception(f'Failed to get OAuth token: {e}')
-    except FileNotFoundError:
-      raise Exception('databricks CLI not found. Please install databricks CLI.')
+  def display_logs(self, logs: List[Dict[str, Any]], last_timestamp: Optional[int] = None) -> int:
+    """Display logs in a formatted way.
+    
+    Args:
+        logs: List of log entries to display
+        last_timestamp: Only show logs newer than this timestamp
+    
+    Returns:
+        The timestamp of the most recent log entry
+    """
+    if not logs:
+      return last_timestamp or 0
+    
+    # Sort logs by timestamp
+    logs = sorted(logs, key=lambda x: x.get('timestamp', 0))
+    
+    max_timestamp = last_timestamp or 0
+    displayed_count = 0
+    
+    for log in logs:
+      timestamp = log.get('timestamp', 0)
+      
+      # Skip logs we've already shown
+      if last_timestamp and timestamp <= last_timestamp:
+        continue
+      
+      source = log.get('source', 'UNKNOWN')
+      message = log.get('message', '')
+      
+      # Format timestamp
+      if timestamp:
+        dt = datetime.fromtimestamp(timestamp)
+        timestamp_str = dt.strftime('%H:%M:%S')
+        max_timestamp = max(max_timestamp, timestamp)
+      else:
+        timestamp_str = '        '
+      
+      # Color code by source
+      if source == 'SYSTEM':
+        source_str = 'SYSTEM'
+      elif source == 'APP':
+        source_str = 'APP   '
+      else:
+        source_str = source[:6].ljust(6)
+      
+      print(f'[{timestamp_str}] {source_str}: {message}')
+      displayed_count += 1
+    
+    return max_timestamp
 
-  def stream_logs(self, search_query: str = '', duration: int = 30):
-    """Stream logs using Server-Sent Events (SSE).
+  def stream_logs(self, search_query: str = '', duration: int = 0, interval: int = 5):
+    """Stream logs by periodically fetching from batch endpoint.
     
     Args:
         search_query: Optional search query to filter logs
         duration: How long to stream logs in seconds (0 = forever)
+        interval: How often to fetch new logs (seconds)
     """
-    if not self._token_cache:
-      self._token_cache = self._get_oauth_token()
-    
-    headers = {
-      'Authorization': f'Bearer {self._token_cache}',
-      'Accept': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-    }
-    
-    # Build URL with query parameter
-    params = {}
-    if search_query:
-      params['q'] = search_query
-    
-    print(f'Connecting to: {self.sse_url}')
+    print(f'Fetching logs from: {self.batch_url}')
     if search_query:
       print(f"Search query: '{search_query}'")
     if duration > 0:
-      print(f'Streaming for {duration} seconds...')
+      print(f'Streaming for {duration} seconds (fetching every {interval}s)...')
     else:
-      print('Streaming continuously (Ctrl+C to stop)...')
+      print(f'Streaming continuously (fetching every {interval}s, Ctrl+C to stop)...')
     print('-' * 50)
     
+    start_time = time.time()
+    last_timestamp = None
+    total_displayed = 0
+    
     try:
-      # Make streaming request
-      response = requests.get(
-        self.sse_url,
-        headers=headers,
-        params=params,
-        stream=True,
-        timeout=(5, None if duration == 0 else duration)
-      )
-      
-      if response.status_code != 200:
-        print(f'❌ Failed to connect: HTTP {response.status_code}')
-        if response.status_code == 503:
-          print('   The app may be starting up. Try again in a few seconds.')
-        elif 'oidc' in response.text.lower():
-          print('   Authentication required. Please login via browser first.')
-        return
-      
-      print('✅ Connected successfully!')
-      print('📋 Streaming logs...\n')
-      
-      start_time = time.time()
-      message_count = 0
-      
-      # Process the SSE stream  
-      buffer = ""
-      for chunk in response.iter_content(chunk_size=1024, decode_unicode=True):
+      while True:
+        # Check if we should stop (duration limit)
         if duration > 0 and time.time() - start_time > duration:
           break
-          
-        if chunk:
-          buffer += chunk
-          
-          # Process complete lines
-          while '\n' in buffer:
-            line, buffer = buffer.split('\n', 1)
-            
-            if not line:
-              continue
-              
-            # SSE format: data: {json}
-            if line.startswith('data: '):
-              data = line[6:]  # Remove 'data: ' prefix
-              
-              # Handle null byte as "no logs" indicator
-              if data == '\x00':
-                if message_count == 0:
-                  print('📭 No logs available yet')
-              else:
-                message_count += 1
-                try:
-                  log_entry = json.loads(data)
-                  timestamp = log_entry.get('timestamp', '')
-                  source = log_entry.get('source', 'UNKNOWN')
-                  msg = log_entry.get('message', '')
-                  
-                  # Format timestamp if present
-                  if timestamp:
-                    from datetime import datetime
-                    dt = datetime.fromtimestamp(timestamp)
-                    timestamp_str = dt.strftime('%H:%M:%S')
-                  else:
-                    timestamp_str = '        '
-                  
-                  # Color code by source
-                  if source == 'SYSTEM':
-                    source_str = 'SYSTEM'
-                  elif source == 'APP':
-                    source_str = 'APP   '
-                  else:
-                    source_str = source[:6].ljust(6)
-                  
-                  print(f'[{timestamp_str}] {source_str}: {msg}')
-                  
-                except json.JSONDecodeError:
-                  # Not JSON, print as-is
-                  print(f'📋 {data}')
-      
-      if duration > 0:
-        print(f'\n⏰ Completed after {duration} seconds')
-      print(f'📊 Received {message_count} log messages')
         
-    except requests.exceptions.Timeout:
-      print(f'\n⏰ Streaming timeout reached')
+        # Fetch logs
+        logs = self.fetch_logs(search_query)
+        
+        if logs:
+          # Display only new logs
+          new_timestamp = self.display_logs(logs, last_timestamp)
+          
+          # Count how many new logs were displayed
+          if last_timestamp:
+            new_logs = [l for l in logs if l.get('timestamp', 0) > last_timestamp]
+            total_displayed += len(new_logs)
+          else:
+            total_displayed = len(logs)
+          
+          last_timestamp = new_timestamp
+        
+        # If not watching, just show once and exit
+        if duration == 0 and not search_query:
+          # Default behavior: show latest logs once
+          break
+        
+        # Wait before next fetch if we're in watch mode
+        if duration != 0 or search_query:
+          time.sleep(interval)
+    
     except KeyboardInterrupt:
       print(f'\n⏹️  Stopped by user')
-    except Exception as e:
-      print(f'❌ Error: {e}')
+    
+    if duration > 0:
+      print(f'\n⏰ Completed after {duration} seconds')
+    print(f'📊 Displayed {total_displayed} log messages')
 
 
 def main():
@@ -178,32 +172,47 @@ def main():
   import argparse
 
   parser = argparse.ArgumentParser(
-    description='Stream logs from Databricks App',
+    description='Fetch logs from Databricks App using /logz/batch endpoint',
     formatter_class=argparse.RawDescriptionHelpFormatter,
     epilog="""
 Examples:
-  # Stream logs for 30 seconds
-  python dba_logz.py https://app.databricksapps.com
+  # Fetch and display latest logs once (auto-detects app URL)
+  python dba_logz.py
+  
+  # Stream logs for 30 seconds (fetch every 5 seconds)
+  python dba_logz.py --duration 30
   
   # Stream logs continuously
-  python dba_logz.py https://app.databricksapps.com --duration 0
+  python dba_logz.py --duration -1
   
   # Search for ERROR messages
-  python dba_logz.py https://app.databricksapps.com --search ERROR
+  python dba_logz.py --search ERROR
   
   # Search for specific text for 60 seconds
-  python dba_logz.py https://app.databricksapps.com --search "database" --duration 60
+  python dba_logz.py --search "database" --duration 60
+  
+  # Fetch logs every 2 seconds
+  python dba_logz.py --duration 30 --interval 2
+  
+  # Or specify app URL explicitly
+  python dba_logz.py --app_url https://app.databricksapps.com
     """
   )
-  parser.add_argument('app_url', help='Base URL of the Databricks app')
+  parser.add_argument('--app_url', help='Base URL of the Databricks app (optional, auto-detected from DATABRICKS_APP_NAME if not provided)')
   parser.add_argument('--search', default='', help='Search query to filter logs')
-  parser.add_argument('--duration', type=int, default=30, 
-                      help='How long to stream logs in seconds (0 = forever)')
+  parser.add_argument('--duration', type=int, default=0, 
+                      help='How long to stream logs in seconds (0=once, -1=forever)')
+  parser.add_argument('--interval', type=int, default=5,
+                      help='Interval between fetches when streaming (seconds)')
 
   args = parser.parse_args()
 
   client = LogzClient(args.app_url)
-  client.stream_logs(args.search, args.duration)
+  
+  # Adjust duration for continuous streaming
+  duration = 0 if args.duration == -1 else args.duration
+  
+  client.stream_logs(args.search, duration, args.interval)
 
 
 if __name__ == '__main__':
