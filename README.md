@@ -1,8 +1,8 @@
-# 🚀 Claude Code + Databricks App Template
+# 🚀 Claude Code + Cursor + Databricks App Template
 
 A modern, full-stack application template for building Databricks Apps with Python FastAPI backend and React TypeScript frontend. 
 
-**[Claude Code](https://claude.ai/code)-centric workflow** - a single `/dba` command transforms your ideas into deployed applications. Claude guides you through product requirements, technical design, implementation, and deployment. It knows the entire Databricks Apps ecosystem and self-heals by automatically diagnosing and fixing issues.
+**AI-powered development workflow** - a single `/dba` command transforms your ideas into deployed applications. Works seamlessly with both [Claude Code](https://claude.ai/code) and [Cursor IDE](https://cursor.sh). The AI guides you through product requirements, technical design, implementation, and deployment. It knows the entire Databricks Apps ecosystem and self-heals by automatically diagnosing and fixing issues.
 
 The `/dba` workflow acts as your product strategist and development architect - brainstorming ideas with you, then building everything all the way to deployment.
 
@@ -11,6 +11,7 @@ The `/dba` workflow acts as your product strategist and development architect - 
 ![React](https://img.shields.io/badge/React-18+-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)
 ![Claude](https://img.shields.io/badge/Claude-Ready-purple)
+![Cursor](https://img.shields.io/badge/Cursor-Ready-blue)
 
 ## 🚀 Getting Started
 
@@ -29,7 +30,7 @@ cd your-databricks-app
 
 #### Option A: Automatic Workflow with `/dba` (Recommended)
 
-Open your repository in [Claude Code](https://claude.ai/code) and run the fully automated, opinionated workflow:
+Open your repository in [Claude Code](https://claude.ai/code) or [Cursor IDE](https://cursor.sh) and run the fully automated, opinionated workflow:
 
 ```
 /dba describe your app here
@@ -47,6 +48,10 @@ The `/dba` command will:
 
 This provides a complete guided experience from idea to deployed app.
 
+**Platform Support:**
+- **Claude Code**: Full `/dba` command integration with guided workflow
+- **Cursor IDE**: Complete `/dba` slash command with repository understanding via `.cursorrules`
+
 #### Option B: Manual Setup with Full Control
 
 If you prefer to have full control over the development process:
@@ -56,24 +61,29 @@ If you prefer to have full control over the development process:
    ./setup.sh
    ```
 
-2. **Open in Claude Code** and develop normally. Claude will:
+2. **Open in Claude Code or Cursor IDE** and develop normally. The AI will:
    - Know about your entire repository structure
    - Understand the Databricks Apps framework
    - Help with any development tasks you request
    - Use the natural language commands documented below
 
-This approach gives you complete flexibility while still benefiting from Claude's knowledge of the codebase and all available commands.
+This approach gives you complete flexibility while still benefiting from AI's knowledge of the codebase and all available commands.
 
 ---
 
 ## 🎬 Demo
 
-This is a [40-minute walkthrough demo](https://youtu.be/jDBTfxk1r7Q) of making an app from start to finish using the `/dba` command in Claude Code.
+This is a [40-minute walkthrough demo](https://youtu.be/jDBTfxk1r7Q) of making an app from start to finish using the `/dba` command in Claude Code. The same workflow now works seamlessly in Cursor IDE!
 
 **Working Example**: [trace-summary-dashboard branch](https://github.com/databricks-solutions/claude-databricks-app-template/tree/trace-summary-dashboard) - Complete implementation from the video  
 **See the Changes**: [View diff](https://github.com/databricks-solutions/claude-databricks-app-template/compare/trace-summary-dashboard?expand=1) - All code changes made during the demo
 
 [![claude_dba_hero](https://github.com/user-attachments/assets/75492599-e5a1-4855-a9d1-c76d45c48da8)](https://youtu.be/jDBTfxk1r7Q)
+
+**Cursor Integration**: This template now includes complete Cursor IDE support with:
+- `/dba` slash command for guided development
+- `.cursorrules` for AI understanding of repository structure
+- Natural language commands for development tasks
 
 ---
 
@@ -108,7 +118,7 @@ The `setup.sh` script will help you install any missing dependencies with intera
 - **🎨 Modern UI** - Beautiful components using shadcn/ui + Tailwind CSS
 - **📦 Package Management** - uv for Python, bun for frontend
 - **🚀 Databricks Apps Ready** - Pre-configured for deployment to Databricks Apps platform
-- **🤖 Claude Integration** - Natural language development commands documented
+- **🤖 AI Integration** - Natural language development commands for Claude Code and Cursor IDE
 
 ## 🏗️ Project Structure
 
@@ -144,7 +154,11 @@ The `setup.sh` script will help you install any missing dependencies with intera
 ├── setup.sh                  # Main setup script
 ├── pyproject.toml            # Python dependencies
 ├── app.yaml                  # Databricks Apps config
-└── CLAUDE.md                 # Development guide
+├── .cursor/                  # Cursor IDE integration
+│   └── commands/
+│       └── dba.md           # /dba slash command
+├── .cursorrules             # Cursor AI repository rules
+└── CLAUDE.md                # Development guide
 ```
 
 ## 🚀 Quick Start (Manual Setup)
@@ -182,14 +196,14 @@ This runs both servers in the background:
 
 Open http://localhost:5173 to see the beautiful welcome page with:
 - Getting Started guide
-- Claude Commands reference
+- AI Commands reference
 - Tech Stack overview
 - Project Structure visualization
 - Current user information from Databricks
 
-## 🧠 Claude Commands
+## 🧠 AI Commands
 
-This template includes natural language commands that Claude understands:
+This template includes natural language commands that work with both Claude Code and Cursor IDE:
 
 ### Development Lifecycle
 - `"start the devserver"` → Runs development servers
