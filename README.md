@@ -1,5 +1,7 @@
 # 🚀 Claude Code + Cursor + Databricks App Template
 
+This is a fork from https://github.com/databricks-solutions/claude-databricks-app-template
+with added changes to run this in Cursor. 
 A modern, full-stack application template for building Databricks Apps with Python FastAPI backend and React TypeScript frontend. 
 
 **AI-powered development workflow** - a single `/dba` command transforms your ideas into deployed applications. Works seamlessly with both [Claude Code](https://claude.ai/code) and [Cursor IDE](https://cursor.sh). The AI guides you through product requirements, technical design, implementation, and deployment. It knows the entire Databricks Apps ecosystem and self-heals by automatically diagnosing and fixing issues.
